@@ -154,7 +154,7 @@
     <a href="{% url 'tour_list' %}">Home</a>
     {% if user.is_authenticated %}
       <a href="{% url 'my_bookings' %}">My Bookings</a>
-      <span class="nav-user">👤 {{ user.first_name }}</span>
+      <a href="{% url 'profile' %}" class="nav-user" style="text-decoration:none;">👤 {{ user.first_name }}</a>
       <a href="{% url 'logout' %}" class="nav-btn">Logout</a>
     {% else %}
       <a href="{% url 'login' %}" class="nav-btn">Sign In</a>

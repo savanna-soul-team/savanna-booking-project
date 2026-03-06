@@ -53,3 +53,11 @@ class PaymentForm(forms.Form):
                 "Enter a valid Safaricom number in format 2547XXXXXXXX"
             )
         return phone
+
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model  = User
+        fields = ['first_name', 'last_name', 'email', 'phone_number', 'profile_pic']
+        widgets = {
+            'profile_pic': forms.FileInput(),
+        }

@@ -22,4 +22,5 @@ urlpatterns = [
 
     # M-Pesa
     path('mpesa/callback/', views.mpesa_callback, name='mpesa_callback'),
+    path('profile/', views.profile_view, name='profile'),
 ]

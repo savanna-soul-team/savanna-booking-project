@@ -10,6 +10,7 @@ from django.conf import settings
 from .models import User, Tour, Booking, MpesaTransaction
 from .forms import RegisterForm, LoginForm, BookingForm, PaymentForm
 from django_daraja.mpesa.core import MpesaClient
+from .forms import RegisterForm, LoginForm, BookingForm, PaymentForm, ProfileForm
 
 logger = logging.getLogger(__name__)
 
@@ -229,3 +230,16 @@ def mpesa_callback(request):
         logger.error(f"M-Pesa callback error: {e}")
 
     return JsonResponse({'ResultCode': 0, 'ResultDesc': 'Accepted'})
+
+# ── Profile ───────────────────────────────────────────────────
+@login_required
+def profile_view(request):
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, request.FILES, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Profile updated successfully!")
+            return redirect('profile')
+    else:
+        form = ProfileForm(instance=request.user)
+    return render(request, 'core/profile.html', {'form': form})
