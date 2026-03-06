@@ -7,6 +7,7 @@ African tour booking platform built with Django + M-Pesa STK Push.
 New to the project? See the full setup guide:
 
 👉 **[SETUP.md](SETUP.md)**
+👉 **[WORKFLOW.md](WORKFLOW.md)**
 
 ## Tech Stack
 
