@@ -1,0 +1,52 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Booking Confirmed — Savanna & Soul{% endblock %}
+
+{% block content %}
+<div class="success-wrap">
+  <div class="success-card">
+    <div class="success-icon">🌍</div>
+    <h2>Booking Confirmed!</h2>
+    <p>
+      Your adventure is booked. Pack your bags —
+      <strong>{{ booking.tour.title }}</strong> awaits on
+      <strong>{{ booking.travel_date }}</strong>!
+    </p>
+
+    <!-- Booking Details -->
+    <div style="background:white;border-radius:4px;padding:28px;margin-bottom:32px;text-align:left;box-shadow:0 2px 16px rgba(0,0,0,0.06);">
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0e8dc;font-size:0.9rem;">
+        <span style="color:var(--muted);">Tour</span>
+        <span style="font-weight:500;">{{ booking.tour.title }}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0e8dc;font-size:0.9rem;">
+        <span style="color:var(--muted);">Location</span>
+        <span>{{ booking.tour.location }}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0e8dc;font-size:0.9rem;">
+        <span style="color:var(--muted);">Travel Date</span>
+        <span>{{ booking.travel_date }}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0e8dc;font-size:0.9rem;">
+        <span style="color:var(--muted);">Guests</span>
+        <span>{{ booking.guests }}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0e8dc;font-size:0.9rem;">
+        <span style="color:var(--muted);">Amount Paid</span>
+        <span style="color:#00a651;font-weight:500;">KES {{ booking.total_kes }}</span>
+      </div>
+      {% if booking.mpesa_ref %}
+        <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:0.9rem;">
+          <span style="color:var(--muted);">M-Pesa Receipt</span>
+          <span style="color:#00a651;font-weight:500;">{{ booking.mpesa_ref }}</span>
+        </div>
+      {% endif %}
+    </div>
+
+    <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+      <a href="{% url 'my_bookings' %}" class="btn-primary">View My Bookings</a>
+      <a href="{% url 'tour_list' %}" class="btn-outline">Explore More</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

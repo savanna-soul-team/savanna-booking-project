@@ -1,0 +1,101 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Savanna & Soul — African Experiences{% endblock %}
+
+{% block content %}
+
+<!-- ===== HERO ===== -->
+<div style="height:100vh;background:linear-gradient(160deg,#1a1208 0%,#2d1a08 40%,#3d2510 100%);position:relative;display:flex;align-items:center;overflow:hidden;">
+  <div style="position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1516426122078-c23e76319801?w=1600&q=80') center/cover;opacity:0.25;"></div>
+  <div style="position:relative;z-index:2;padding:0 48px;max-width:700px;">
+    <div style="color:var(--gold);font-size:0.8rem;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:20px;">Discover the Continent</div>
+    <h1 style="font-family:'Playfair Display',serif;font-size:clamp(3rem,6vw,5.5rem);color:white;line-height:1.08;margin-bottom:24px;">
+      Where the <em style="color:var(--gold);font-style:italic;">Wild</em><br>Calls You Home
+    </h1>
+    <p style="color:#c4b49a;font-size:1.15rem;line-height:1.7;margin-bottom:40px;font-weight:300;">
+      Immersive safari adventures, cultural journeys, and untamed landscapes across the most extraordinary continent on Earth.
+    </p>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;">
+      <a href="#tours" class="btn-primary">Explore Experiences</a>
+      {% if not user.is_authenticated %}
+        <a href="{% url 'register' %}" class="btn-outline" style="color:white;border-color:rgba(255,255,255,0.4);">Create Account</a>
+      {% endif %}
+    </div>
+  </div>
+  <div style="position:absolute;bottom:48px;right:48px;display:flex;gap:48px;">
+    <div style="text-align:center;">
+      <div style="font-family:'Playfair Display',serif;font-size:2.2rem;color:var(--gold);">48+</div>
+      <div style="color:#8a7a60;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;">Destinations</div>
+    </div>
+    <div style="text-align:center;">
+      <div style="font-family:'Playfair Display',serif;font-size:2.2rem;color:var(--gold);">12K</div>
+      <div style="color:#8a7a60;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;">Happy Travellers</div>
+    </div>
+    <div style="text-align:center;">
+      <div style="font-family:'Playfair Display',serif;font-size:2.2rem;color:var(--gold);">4.9★</div>
+      <div style="color:#8a7a60;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;">Average Rating</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TOURS ===== -->
+<div class="section" id="tours">
+  <div class="section-eyebrow">All Experiences</div>
+  <h2 class="section-title">Browse Our Tours</h2>
+  <p class="section-sub">Filter by destination or activity type to find your perfect African adventure.</p>
+
+  <!-- Filters -->
+  <div class="filters">
+    <a href="?" class="filter-btn {% if not selected_country and not selected_category %}active{% endif %}">All</a>
+    <a href="?country=kenya"       class="filter-btn {% if selected_country == 'kenya' %}active{% endif %}">🇰🇪 Kenya</a>
+    <a href="?country=southafrica" class="filter-btn {% if selected_country == 'southafrica' %}active{% endif %}">🇿🇦 South Africa</a>
+    <a href="?country=tanzania"    class="filter-btn {% if selected_country == 'tanzania' %}active{% endif %}">🇹🇿 Tanzania</a>
+    <a href="?country=morocco"     class="filter-btn {% if selected_country == 'morocco' %}active{% endif %}">🇲🇦 Morocco</a>
+    <a href="?country=uganda"      class="filter-btn {% if selected_country == 'uganda' %}active{% endif %}">🇺🇬 Uganda</a>
+    <a href="?category=safari"     class="filter-btn {% if selected_category == 'safari' %}active{% endif %}">🦁 Safari</a>
+    <a href="?category=cultural"   class="filter-btn {% if selected_category == 'cultural' %}active{% endif %}">🏺 Cultural</a>
+    <a href="?category=adventure"  class="filter-btn {% if selected_category == 'adventure' %}active{% endif %}">🧗 Adventure</a>
+  </div>
+
+  <!-- Tour Cards -->
+  {% if tours %}
+    <div class="tours-grid">
+      {% for tour in tours %}
+        <div class="tour-card">
+          <div class="tour-img" style="background-image:url('{{ tour.get_image }}')">
+            {% if tour.badge %}
+              <div class="tour-badge">{{ tour.badge }}</div>
+            {% endif %}
+          </div>
+          <div class="tour-body">
+            <div class="tour-location">📍 {{ tour.location }}</div>
+            <div class="tour-title">{{ tour.title }}</div>
+            <div class="tour-desc">{{ tour.description|truncatewords:20 }}</div>
+            <div class="tour-footer">
+              <div>
+                <div class="tour-price">${{ tour.price_usd }} <span>/ person</span></div>
+                <div class="tour-meta">
+                  <span>⏱ {{ tour.duration }}</span>
+                  <span>⭐ {{ tour.rating }}</span>
+                </div>
+              </div>
+              {% if user.is_authenticated %}
+                <a href="{% url 'create_booking' tour.pk %}" class="book-btn">Book Now</a>
+              {% else %}
+                <a href="{% url 'login' %}?next={% url 'create_booking' tour.pk %}" class="book-btn">Book Now</a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <h3>No tours found</h3>
+      <p style="color:var(--muted);margin-bottom:24px;">Try a different filter.</p>
+      <a href="?" class="btn-primary">View All Tours</a>
+    </div>
+  {% endif %}
+</div>
+
+{% endblock %}

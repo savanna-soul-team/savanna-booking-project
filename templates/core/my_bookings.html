@@ -1,0 +1,62 @@
+{% extends 'core/base.html' %}
+
+{% block title %}My Bookings — Savanna & Soul{% endblock %}
+
+{% block content %}
+<div class="page-wrap">
+  <h2>My Bookings</h2>
+  <p class="sub">Manage your upcoming and past experiences.</p>
+
+  {% if bookings %}
+    {% for booking in bookings %}
+      <div class="booking-item">
+
+        <!-- IMAGE -->
+        <div class="booking-item-img"
+             style="background-image:url('{{ booking.tour.get_image }}');"></div>
+
+        <!-- DETAILS -->
+        <div>
+          <h4>{{ booking.tour.title }}</h4>
+          <div class="meta">📍 {{ booking.tour.location }} &nbsp;|&nbsp; 📅 {{ booking.travel_date }} &nbsp;|&nbsp; 👥 {{ booking.guests }} guest{{ booking.guests|pluralize }}</div>
+          <div class="meta" style="margin-top:4px;">
+            💰 ${{ booking.total_usd }} &nbsp;·&nbsp; KES {{ booking.total_kes }}
+            {% if booking.mpesa_ref %}
+              &nbsp;·&nbsp; <span style="color:#00a651;font-weight:500;">M-Pesa: {{ booking.mpesa_ref }}</span>
+            {% endif %}
+          </div>
+          <span class="status-badge status-{{ booking.status }}">{{ booking.status }}</span>
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="booking-actions">
+          {% if booking.status == 'pending' %}
+            <a href="{% url 'payment' booking.pk %}" class="book-btn"
+               style="text-align:center;">Pay Now</a>
+            <a href="{% url 'edit_booking' booking.pk %}" class="btn-edit">Edit</a>
+            <form method="POST" action="{% url 'cancel_booking' booking.pk %}"
+                  onsubmit="return confirm('Cancel this booking?')">
+              {% csrf_token %}
+              <button type="submit" class="btn-delete">Cancel</button>
+            </form>
+          {% elif booking.status == 'confirmed' %}
+            <a href="{% url 'booking_success' booking.pk %}" class="btn-edit">View</a>
+          {% endif %}
+        </div>
+
+      </div>
+    {% endfor %}
+
+  {% else %}
+    <div class="empty-state">
+      <div style="font-size:4rem;margin-bottom:16px;">🌍</div>
+      <h3>No bookings yet</h3>
+      <p style="color:var(--muted);margin-bottom:24px;">
+        Your adventures will appear here once booked.
+      </p>
+      <a href="{% url 'tour_list' %}" class="btn-primary">Explore Experiences</a>
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}

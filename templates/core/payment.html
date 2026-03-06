@@ -1,0 +1,159 @@
+{% extends 'core/base.html' %}
+
+{% block title %}M-Pesa Payment — Savanna & Soul{% endblock %}
+
+{% block content %}
+<div class="page-wrap" style="max-width:640px;">
+  <h2>M-Pesa Payment</h2>
+  <p class="sub">Fast, secure mobile money payment.</p>
+
+  <div class="mpesa-card">
+
+    <!-- HEADER -->
+    <div class="mpesa-header">
+      <div>
+        <div class="mpesa-logo">M-<span>PESA</span></div>
+        <div class="mpesa-tagline">Powered by Safaricom · Lipa Na M-Pesa</div>
+      </div>
+      <div style="margin-left:auto;text-align:right;">
+        <div style="color:rgba(255,255,255,0.7);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;">Reference</div>
+        <div style="color:white;font-weight:500;">SB-{{ booking.pk }}</div>
+      </div>
+    </div>
+
+    <div class="mpesa-body">
+
+      <!-- AMOUNT -->
+      <div class="mpesa-amount-display">
+        <div class="mpesa-amount-label">Amount to Pay</div>
+        <div class="mpesa-amount-value">KES {{ booking.total_kes }}</div>
+        <div style="font-size:0.8rem;color:#6b8f70;margin-top:4px;">
+          {{ booking.tour.title }} · {{ booking.guests }} guest{{ booking.guests|pluralize }}
+        </div>
+      </div>
+
+      <!-- STEP 1: PHONE FORM -->
+      <div id="step-phone">
+        <div class="stk-notice">
+          📱 Enter your M-Pesa registered number. A push notification will be sent to your phone to complete payment.
+        </div>
+
+        {% if form.errors %}
+          <ul class="errorlist">
+            {% for error in form.non_field_errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+            {% for field in form %}
+              {% for error in field.errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            {% endfor %}
+          </ul>
+        {% endif %}
+
+        <form id="payment-form">
+          {% csrf_token %}
+          <div class="form-group">
+            <label>M-Pesa Phone Number</label>
+            <input type="text" id="phone-input" name="phone_number"
+                   placeholder="2547XXXXXXXX" maxlength="12"
+                   value="{{ request.user.phone_number }}"
+                   style="font-size:1.1rem;letter-spacing:0.05em;"/>
+            <small style="color:var(--muted);font-size:0.8rem;margin-top:6px;display:block;">
+              Format: 2547XXXXXXXX
+            </small>
+          </div>
+
+          <!-- Booking summary -->
+          <div style="background:var(--sand);border-radius:4px;padding:18px;margin-bottom:8px;">
+            <div style="display:flex;justify-content:space-between;font-size:0.9rem;margin-bottom:6px;">
+              <span style="color:var(--muted);">Tour</span>
+              <span style="font-weight:500;">{{ booking.tour.title }}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:0.9rem;margin-bottom:6px;">
+              <span style="color:var(--muted);">Guests</span>
+              <span>{{ booking.guests }}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:0.9rem;margin-bottom:6px;">
+              <span style="color:var(--muted);">Travel Date</span>
+              <span>{{ booking.travel_date }}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:0.9rem;border-top:1px solid #ddd;padding-top:10px;margin-top:4px;">
+              <span style="color:var(--muted);">Total</span>
+              <span style="color:#00a651;font-family:'Playfair Display',serif;font-size:1.2rem;">
+                KES {{ booking.total_kes }}
+              </span>
+            </div>
+          </div>
+
+          <button type="submit" class="mpesa-submit">
+            Request STK Push →
+          </button>
+          <div class="secure-badge">🔒 Secured by Safaricom M-Pesa encryption</div>
+        </form>
+      </div>
+
+      <!-- STEP 2: WAITING -->
+      <div id="step-waiting" style="display:none;text-align:center;padding:40px 20px;">
+        <div class="spinner"></div>
+        <p style="font-weight:600;margin-bottom:8px;">Waiting for PIN confirmation…</p>
+        <p style="color:var(--muted);font-size:0.95rem;">
+          Check your phone and enter your M-Pesa PIN to complete payment.
+        </p>
+        <p style="color:var(--muted);font-size:0.85rem;margin-top:16px;" id="status-msg">
+          Checking payment status…
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const STATUS_URL  = "{% url 'payment_status' booking.pk %}";
+  const SUCCESS_URL = "{% url 'booking_success' booking.pk %}";
+  const PAY_URL     = "{% url 'payment' booking.pk %}";
+  let pollInterval;
+
+  document.getElementById('payment-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const phone = document.getElementById('phone-input').value.trim();
+    const csrf  = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    const res  = await fetch(PAY_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: `phone_number=${encodeURIComponent(phone)}&csrfmiddlewaretoken=${encodeURIComponent(csrf)}`
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      document.getElementById('step-phone').style.display   = 'none';
+      document.getElementById('step-waiting').style.display = 'block';
+      startPolling();
+    } else {
+      alert(data.message || 'STK push failed. Please try again.');
+    }
+  });
+
+  function startPolling() {
+    pollInterval = setInterval(async () => {
+      const res  = await fetch(STATUS_URL);
+      const data = await res.json();
+      document.getElementById('status-msg').textContent = `Status: ${data.status}…`;
+
+      if (data.status === 'success') {
+        clearInterval(pollInterval);
+        window.location.href = SUCCESS_URL;
+      } else if (data.status === 'failed') {
+        clearInterval(pollInterval);
+        alert('Payment failed or was cancelled. Please try again.');
+        document.getElementById('step-phone').style.display   = 'block';
+        document.getElementById('step-waiting').style.display = 'none';
+      }
+    }, 3000);
+  }
+</script>
+{% endblock %}
