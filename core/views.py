@@ -1,14 +1,15 @@
 import json
 import logging
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
 from .models import User, Tour, Booking, MpesaTransaction
 from .forms import RegisterForm, LoginForm, BookingForm, PaymentForm
-from .mpesa import MpesaClient
+from django_daraja.mpesa.core import MpesaClient
 
 logger = logging.getLogger(__name__)
 
@@ -89,13 +90,14 @@ def create_booking(request, tour_pk):
 
 @login_required
 def my_bookings(request):
-    bookings = Booking.objects.filter(user=request.user).order_by('-created_at')
+    bookings = Booking.objects.filter(
+        user=request.user).order_by('-created_at')
     return render(request, 'core/my_bookings.html', {'bookings': bookings})
 
 @login_required
 def edit_booking(request, pk):
-    booking = get_object_or_404(Booking, pk=pk, user=request.user,
-                                status='pending')
+    booking = get_object_or_404(
+        Booking, pk=pk, user=request.user, status='pending')
     if request.method == 'POST':
         form = BookingForm(request.POST, instance=booking)
         if form.is_valid():
@@ -126,45 +128,47 @@ def payment_view(request, pk):
     booking = get_object_or_404(Booking, pk=pk, user=request.user)
     if booking.status == 'confirmed':
         return redirect('booking_success', pk=booking.pk)
+
     if request.method == 'POST':
         form = PaymentForm(request.POST)
         if form.is_valid():
             phone  = form.cleaned_data['phone_number']
-            client = MpesaClient()
-            result = client.stk_push(
-                phone_number=phone,
-                amount=booking.total_kes,
-                account_ref=f"SB-{booking.pk}",
-                description=f"{booking.tour.title[:20]}",
+            cl     = MpesaClient()
+            resp   = cl.stk_push(
+                phone,
+                booking.total_kes,
+                f"SB-{booking.pk}",
+                f"{booking.tour.title[:20]}",
+                settings.MPESA_CALLBACK_URL,
             )
-            if result.get('ResponseCode') == '0':
+            if resp.response_code == '0':
                 MpesaTransaction.objects.update_or_create(
                     booking=booking,
                     defaults={
-                        'checkout_request_id': result['CheckoutRequestID'],
-                        'merchant_request_id': result['MerchantRequestID'],
-                        'phone_number': phone,
-                        'amount': booking.total_kes,
-                        'status': 'pending',
+                        'checkout_request_id': resp.checkout_request_id,
+                        'merchant_request_id': resp.merchant_request_id,
+                        'phone_number':        phone,
+                        'amount':              booking.total_kes,
+                        'status':              'pending',
                     }
                 )
                 return JsonResponse({
                     'success': True,
-                    'checkout_request_id': result['CheckoutRequestID'],
-                    'message': 'STK push sent. Enter PIN on your phone.'
+                    'message': 'STK push sent. Enter PIN on your phone.',
                 })
             else:
                 return JsonResponse({
                     'success': False,
-                    'message': result.get('errorMessage', 'STK push failed.')
+                    'message': resp.response_description or 'STK push failed.',
                 })
     else:
         form = PaymentForm(initial={
             'phone_number': request.user.phone_number
         })
+
     return render(request, 'core/payment.html', {
         'booking': booking,
-        'form': form,
+        'form':    form,
     })
 
 @login_required
@@ -173,7 +177,7 @@ def payment_status(request, pk):
     try:
         txn = booking.mpesa_transaction
         return JsonResponse({
-            'status': txn.status,
+            'status':  txn.status,
             'receipt': txn.mpesa_receipt,
         })
     except MpesaTransaction.DoesNotExist:
@@ -199,8 +203,7 @@ def mpesa_callback(request):
 
         try:
             txn = MpesaTransaction.objects.get(
-                checkout_request_id=checkout_id
-            )
+                checkout_request_id=checkout_id)
         except MpesaTransaction.DoesNotExist:
             return JsonResponse({'ResultCode': 0, 'ResultDesc': 'Accepted'})
 
@@ -208,13 +211,14 @@ def mpesa_callback(request):
         txn.result_desc = result_desc
 
         if result_code == 0:
-            items = stk_callback.get('CallbackMetadata', {}).get('Item', [])
-            meta  = {i['Name']: i.get('Value') for i in items}
-            txn.mpesa_receipt    = str(meta.get('MpesaReceiptNumber', ''))
-            txn.status           = 'success'
-            booking              = txn.booking
-            booking.status       = 'confirmed'
-            booking.mpesa_ref    = txn.mpesa_receipt
+            items = stk_callback.get(
+                'CallbackMetadata', {}).get('Item', [])
+            meta             = {i['Name']: i.get('Value') for i in items}
+            txn.mpesa_receipt = str(meta.get('MpesaReceiptNumber', ''))
+            txn.status        = 'success'
+            booking           = txn.booking
+            booking.status    = 'confirmed'
+            booking.mpesa_ref = txn.mpesa_receipt
             booking.save()
         else:
             txn.status = 'failed'

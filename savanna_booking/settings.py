@@ -16,6 +16,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'crispy_forms',
     'crispy_bootstrap5',
+    'django_daraja',
     'core',
 ]
 
@@ -83,10 +84,10 @@ LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
-# M-Pesa
+# M-Pesa (django-daraja)
+MPESA_ENVIRONMENT     = config('MPESA_ENV', default='sandbox')
 MPESA_CONSUMER_KEY    = config('MPESA_CONSUMER_KEY')
 MPESA_CONSUMER_SECRET = config('MPESA_CONSUMER_SECRET')
 MPESA_SHORTCODE       = config('MPESA_SHORTCODE')
 MPESA_PASSKEY         = config('MPESA_PASSKEY')
-MPESA_ENV             = config('MPESA_ENV', default='sandbox')
 MPESA_CALLBACK_URL    = config('MPESA_CALLBACK_URL')
