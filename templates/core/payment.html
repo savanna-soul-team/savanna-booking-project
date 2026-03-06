@@ -1,15 +1,13 @@
 {% extends 'core/base.html' %}
-
 {% block title %}M-Pesa Payment — Savanna & Soul{% endblock %}
 
 {% block content %}
-<div class="page-wrap" style="max-width:640px;">
+<div class="payment-wrap">
   <h2>M-Pesa Payment</h2>
-  <p class="sub">Fast, secure mobile money payment.</p>
+  <p style="color:var(--muted);margin-bottom:0;">Fast, secure mobile money payment.</p>
 
   <div class="mpesa-card">
 
-    <!-- HEADER -->
     <div class="mpesa-header">
       <div>
         <div class="mpesa-logo">M-<span>PESA</span></div>
@@ -17,92 +15,87 @@
       </div>
       <div style="margin-left:auto;text-align:right;">
         <div style="color:rgba(255,255,255,0.7);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;">Reference</div>
-        <div style="color:white;font-weight:500;">SB-{{ booking.pk }}</div>
+        <div style="color:white;font-weight:500;font-size:0.95rem;">SB-{{ booking.pk }}</div>
+      </div>
+    </div>
+
+    <div style="padding:24px 40px 0;">
+      <div class="mpesa-steps">
+        <div class="mpesa-step active" id="step-1">① Phone</div>
+        <div class="mpesa-step" id="step-2">② PIN</div>
+        <div class="mpesa-step" id="step-3">③ Confirm</div>
       </div>
     </div>
 
     <div class="mpesa-body">
 
-      <!-- AMOUNT -->
       <div class="mpesa-amount-display">
         <div class="mpesa-amount-label">Amount to Pay</div>
         <div class="mpesa-amount-value">KES {{ booking.total_kes }}</div>
-        <div style="font-size:0.8rem;color:#6b8f70;margin-top:4px;">
-          {{ booking.tour.title }} · {{ booking.guests }} guest{{ booking.guests|pluralize }}
-        </div>
+        <div style="font-size:0.8rem;color:#6b8f70;margin-top:4px;">{{ booking.tour.title }} · {{ booking.guests }} guest{{ booking.guests|pluralize }}</div>
       </div>
 
-      <!-- STEP 1: PHONE FORM -->
-      <div id="step-phone">
-        <div class="stk-notice">
-          📱 Enter your M-Pesa registered number. A push notification will be sent to your phone to complete payment.
-        </div>
-
-        {% if form.errors %}
-          <ul class="errorlist">
-            {% for error in form.non_field_errors %}
-              <li>{{ error }}</li>
-            {% endfor %}
-            {% for field in form %}
-              {% for error in field.errors %}
-                <li>{{ error }}</li>
-              {% endfor %}
-            {% endfor %}
-          </ul>
-        {% endif %}
-
+      <!-- STEP 1: Phone -->
+      <div id="mpesa-step1">
+        <div class="stk-notice">📱 Enter your M-Pesa registered phone number. An STK push will be sent to your phone to complete payment.</div>
         <form id="payment-form">
           {% csrf_token %}
           <div class="form-group">
             <label>M-Pesa Phone Number</label>
-            <input type="text" id="phone-input" name="phone_number"
-                   placeholder="2547XXXXXXXX" maxlength="12"
-                   value="{{ request.user.phone_number }}"
-                   style="font-size:1.1rem;letter-spacing:0.05em;"/>
-            <small style="color:var(--muted);font-size:0.8rem;margin-top:6px;display:block;">
-              Format: 2547XXXXXXXX
-            </small>
+            <div class="phone-input-wrap">
+              <span class="phone-prefix">+254</span>
+              <input type="tel" id="pay-phone" placeholder="7XX XXX XXX" maxlength="9"
+                     oninput="this.value=this.value.replace(/\D/g,'').substring(0,9)"/>
+            </div>
           </div>
-
-          <!-- Booking summary -->
           <div style="background:var(--sand);border-radius:4px;padding:18px;margin-bottom:8px;">
-            <div style="display:flex;justify-content:space-between;font-size:0.9rem;margin-bottom:6px;">
-              <span style="color:var(--muted);">Tour</span>
-              <span style="font-weight:500;">{{ booking.tour.title }}</span>
-            </div>
-            <div style="display:flex;justify-content:space-between;font-size:0.9rem;margin-bottom:6px;">
-              <span style="color:var(--muted);">Guests</span>
-              <span>{{ booking.guests }}</span>
-            </div>
-            <div style="display:flex;justify-content:space-between;font-size:0.9rem;margin-bottom:6px;">
-              <span style="color:var(--muted);">Travel Date</span>
-              <span>{{ booking.travel_date }}</span>
-            </div>
-            <div style="display:flex;justify-content:space-between;font-size:0.9rem;border-top:1px solid #ddd;padding-top:10px;margin-top:4px;">
-              <span style="color:var(--muted);">Total</span>
-              <span style="color:#00a651;font-family:'Playfair Display',serif;font-size:1.2rem;">
-                KES {{ booking.total_kes }}
-              </span>
-            </div>
+            <div style="display:flex;justify-content:space-between;font-size:0.9rem;margin-bottom:6px;"><span style="color:var(--muted)">Tour</span><span style="font-weight:500;">{{ booking.tour.title }}</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:0.9rem;margin-bottom:6px;"><span style="color:var(--muted)">Guests</span><span>{{ booking.guests }}</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:0.9rem;margin-bottom:6px;"><span style="color:var(--muted)">Travel Date</span><span>{{ booking.travel_date }}</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:0.9rem;border-top:1px solid #ddd;padding-top:10px;margin-top:4px;"><span style="color:var(--muted)">Total (KES)</span><span style="color:#00a651;font-family:'Playfair Display',serif;font-size:1.2rem;">KES {{ booking.total_kes }}</span></div>
           </div>
-
-          <button type="submit" class="mpesa-submit">
-            Request STK Push →
-          </button>
+          <button type="submit" class="mpesa-submit">Request STK Push →</button>
           <div class="secure-badge">🔒 Secured by Safaricom M-Pesa encryption</div>
         </form>
       </div>
 
-      <!-- STEP 2: WAITING -->
-      <div id="step-waiting" style="display:none;text-align:center;padding:40px 20px;">
+      <!-- STEP 2: PIN -->
+      <div id="mpesa-step2" style="display:none;">
+        <div class="stk-notice">📱 Push sent to <strong id="stk-phone-display"></strong>. Enter your M-Pesa PIN below.</div>
+        <div style="text-align:center;margin-bottom:8px;">
+          <div style="font-size:0.8rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;">Enter M-Pesa PIN</div>
+          <div class="mpesa-pin-group" id="pin-dots">
+            <div class="pin-dot" id="dot0">●</div>
+            <div class="pin-dot" id="dot1">●</div>
+            <div class="pin-dot" id="dot2">●</div>
+            <div class="pin-dot" id="dot3">●</div>
+          </div>
+          <div class="pin-keypad">
+            <div class="pin-key" onclick="pinPress('1')">1</div>
+            <div class="pin-key" onclick="pinPress('2')">2</div>
+            <div class="pin-key" onclick="pinPress('3')">3</div>
+            <div class="pin-key" onclick="pinPress('4')">4</div>
+            <div class="pin-key" onclick="pinPress('5')">5</div>
+            <div class="pin-key" onclick="pinPress('6')">6</div>
+            <div class="pin-key" onclick="pinPress('7')">7</div>
+            <div class="pin-key" onclick="pinPress('8')">8</div>
+            <div class="pin-key" onclick="pinPress('9')">9</div>
+            <div class="pin-key" onclick="pinPress('C')" style="font-size:0.75rem;color:var(--muted)">CLR</div>
+            <div class="pin-key" onclick="pinPress('0')">0</div>
+            <div class="pin-key del" onclick="pinPress('DEL')">⌫</div>
+          </div>
+        </div>
+        <button class="mpesa-submit" id="pin-confirm-btn" onclick="confirmPin()" disabled>Confirm Payment</button>
+        <div style="text-align:center;margin-top:12px;">
+          <a onclick="backToPhone()" style="color:var(--muted);font-size:0.85rem;cursor:pointer;">← Change number</a>
+        </div>
+      </div>
+
+      <!-- STEP 3: Processing -->
+      <div id="mpesa-step3" style="display:none;text-align:center;padding:40px 20px;">
         <div class="spinner"></div>
-        <p style="font-weight:600;margin-bottom:8px;">Waiting for PIN confirmation…</p>
-        <p style="color:var(--muted);font-size:0.95rem;">
-          Check your phone and enter your M-Pesa PIN to complete payment.
-        </p>
-        <p style="color:var(--muted);font-size:0.85rem;margin-top:16px;" id="status-msg">
-          Checking payment status…
-        </p>
+        <p><strong>Processing your payment…</strong><br>Please wait while we confirm your M-Pesa transaction.</p>
+        <p style="color:var(--muted);font-size:0.85rem;margin-top:16px;" id="status-msg"></p>
       </div>
 
     </div>
@@ -116,42 +109,72 @@
   const SUCCESS_URL = "{% url 'booking_success' booking.pk %}";
   const PAY_URL     = "{% url 'payment' booking.pk %}";
   let pollInterval;
+  let pinEntry = '';
+
+  function showMpesaStep(n) {
+    [1,2,3].forEach(i => {
+      document.getElementById('mpesa-step'+i).style.display = i===n ? 'block' : 'none';
+      const s = document.getElementById('step-'+i);
+      s.className = 'mpesa-step' + (i<n ? ' done' : i===n ? ' active' : '');
+    });
+  }
 
   document.getElementById('payment-form').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const phone = document.getElementById('phone-input').value.trim();
+    const raw  = document.getElementById('pay-phone').value.trim();
+    const phone = '254' + raw;
     const csrf  = document.querySelector('[name=csrfmiddlewaretoken]').value;
-
+    if (raw.length !== 9) { alert('Enter a valid 9-digit number after +254'); return; }
     const res  = await fetch(PAY_URL, {
       method: 'POST',
-      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      headers: {'Content-Type':'application/x-www-form-urlencoded'},
       body: `phone_number=${encodeURIComponent(phone)}&csrfmiddlewaretoken=${encodeURIComponent(csrf)}`
     });
     const data = await res.json();
-
     if (data.success) {
-      document.getElementById('step-phone').style.display   = 'none';
-      document.getElementById('step-waiting').style.display = 'block';
-      startPolling();
+      document.getElementById('stk-phone-display').textContent = '+254 ' + raw;
+      pinEntry = ''; updatePinDots();
+      showMpesaStep(2);
     } else {
       alert(data.message || 'STK push failed. Please try again.');
     }
   });
 
+  function pinPress(val) {
+    if (val==='DEL') pinEntry = pinEntry.slice(0,-1);
+    else if (val==='C') pinEntry = '';
+    else if (pinEntry.length < 4) pinEntry += val;
+    updatePinDots();
+    document.getElementById('pin-confirm-btn').disabled = pinEntry.length < 4;
+  }
+
+  function updatePinDots() {
+    for (let i=0; i<4; i++) {
+      const dot = document.getElementById('dot'+i);
+      dot.className = 'pin-dot' + (i < pinEntry.length ? ' filled' : '');
+    }
+  }
+
+  function backToPhone() { pinEntry=''; updatePinDots(); showMpesaStep(1); }
+
+  function confirmPin() {
+    if (pinEntry.length < 4) return;
+    showMpesaStep(3);
+    startPolling();
+  }
+
   function startPolling() {
     pollInterval = setInterval(async () => {
       const res  = await fetch(STATUS_URL);
       const data = await res.json();
-      document.getElementById('status-msg').textContent = `Status: ${data.status}…`;
-
+      document.getElementById('status-msg').textContent = 'Status: ' + data.status + '…';
       if (data.status === 'success') {
         clearInterval(pollInterval);
         window.location.href = SUCCESS_URL;
       } else if (data.status === 'failed') {
         clearInterval(pollInterval);
         alert('Payment failed or was cancelled. Please try again.');
-        document.getElementById('step-phone').style.display   = 'block';
-        document.getElementById('step-waiting').style.display = 'none';
+        showMpesaStep(1);
       }
     }, 3000);
   }

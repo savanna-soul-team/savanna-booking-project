@@ -1,51 +1,40 @@
 {% extends 'core/base.html' %}
-
 {% block title %}{% if edit %}Edit Booking{% else %}Book {{ tour.title }}{% endif %} — Savanna & Soul{% endblock %}
 
 {% block content %}
-<div class="page-wrap">
+<div class="booking-wrap">
   <h2>{% if edit %}Edit Booking{% else %}Book Your Experience{% endif %}</h2>
-  <p class="sub">{% if edit %}Update your booking details below.{% else %}Fill in your details to reserve your spot.{% endif %}</p>
+  <p class="sub">{% if edit %}Update your booking details.{% else %}Fill in your details to reserve your spot.{% endif %}</p>
 
   <div class="booking-grid">
 
-    <!-- FORM -->
-    <div class="card">
-      <h3 style="font-family:'Playfair Display',serif;font-size:1.4rem;margin-bottom:24px;">Your Details</h3>
-
+    <div class="booking-form-card">
+      <h3>Your Details</h3>
       {% if form.errors %}
-        <ul class="errorlist">
-          {% for field in form %}
-            {% for error in field.errors %}
-              <li>{{ field.label }}: {{ error }}</li>
-            {% endfor %}
-          {% endfor %}
-        </ul>
+      <div class="error-msg">
+        {% for field in form %}{% for error in field.errors %}{{ field.label }}: {{ error }}<br>{% endfor %}{% endfor %}
+        {% for error in form.non_field_errors %}{{ error }}<br>{% endfor %}
+      </div>
       {% endif %}
-
       <form method="POST">
         {% csrf_token %}
         <div class="form-group">
           <label>Travel Date</label>
-          <input type="date" name="travel_date"
-                 value="{{ form.travel_date.value|default:'' }}"
-                 min="{% now 'Y-m-d' %}" required/>
+          <input type="date" name="travel_date" value="{{ form.travel_date.value|default:'' }}" required/>
         </div>
-        <div class="form-group">
-          <label>Number of Guests</label>
-          <select name="guests">
-            {% for i in "12345"|make_list %}
-              <option value="{{ i }}" {% if form.guests.value == i %}selected{% endif %}>
-                {{ i }} Guest{% if i != "1" %}s{% endif %}
-              </option>
-            {% endfor %}
-            <option value="6" {% if form.guests.value == "6" %}selected{% endif %}>6+ Guests</option>
-          </select>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div class="form-group">
+            <label>Guests</label>
+            <select name="guests" id="guests-select">
+              {% for i in "123456"|make_list %}
+                <option value="{{ i }}" {% if form.guests.value == i %}selected{% endif %}>{{ i }} Guest{% if i != "1" %}s{% endif %}</option>
+              {% endfor %}
+            </select>
+          </div>
         </div>
         <div class="form-group">
           <label>Special Requests <span style="color:var(--muted);font-size:0.75rem;">(optional)</span></label>
-          <textarea name="special_notes" rows="3"
-                    placeholder="Dietary requirements, accessibility needs, etc.">{{ form.special_notes.value|default:'' }}</textarea>
+          <textarea name="special_notes" rows="3" placeholder="Dietary requirements, accessibility needs, etc.">{{ form.special_notes.value|default:'' }}</textarea>
         </div>
         <button type="submit" class="auth-submit">
           {% if edit %}Save Changes{% else %}Continue to Payment →{% endif %}
@@ -53,35 +42,36 @@
       </form>
     </div>
 
-    <!-- SUMMARY -->
     <div class="booking-summary">
       <h3>Your Experience</h3>
       <div class="summary-img" style="background-image:url('{{ tour.get_image }}');"></div>
-      <div class="summary-row">
-        <span>Tour</span>
-        <span style="font-weight:500;">{{ tour.title }}</span>
-      </div>
-      <div class="summary-row">
-        <span>📍 Location</span>
-        <span>{{ tour.location }}</span>
-      </div>
-      <div class="summary-row">
-        <span>⏱ Duration</span>
-        <span>{{ tour.duration }}</span>
-      </div>
-      <div class="summary-row">
-        <span>⭐ Rating</span>
-        <span>{{ tour.rating }}</span>
-      </div>
-      <div class="summary-total">
-        <span>Price / person</span>
-        <span class="serif">${{ tour.price_usd }}</span>
-      </div>
-      <div style="margin-top:8px;text-align:right;color:rgba(255,255,255,0.5);font-size:0.8rem;">
-        ≈ KES {{ tour.price_kes }}
-      </div>
+      <div class="summary-row"><span>📍 Location</span><span>{{ tour.location }}</span></div>
+      <div class="summary-row"><span>⏱ Duration</span><span>{{ tour.duration }}</span></div>
+      <div class="summary-row"><span>⭐ Rating</span><span>{{ tour.rating }}</span></div>
+      <div class="summary-row"><span>👥 Guests</span><span id="summary-guests">1 Guest</span></div>
+      <div class="summary-row"><span>Price / person</span><span>${{ tour.price_usd }}</span></div>
+      <div class="summary-total"><span>Total</span><span class="serif" id="summary-total">${{ tour.price_usd }}</span></div>
+      <div style="text-align:right;color:rgba(255,255,255,0.5);font-size:0.8rem;margin-top:4px;" id="summary-kes">≈ KES {{ tour.price_kes }}</div>
     </div>
 
   </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const PRICE_USD = parseFloat("{{ tour.price_usd }}");
+  const PRICE_KES = parseInt("{{ tour.price_kes }}");
+  const sel = document.getElementById('guests-select');
+
+  function updateSummary() {
+    const g = parseInt(sel.value) || 1;
+    document.getElementById('summary-guests').textContent = g + ' Guest' + (g > 1 ? 's' : '');
+    document.getElementById('summary-total').textContent  = '$' + (PRICE_USD * g).toLocaleString('en-US', {minimumFractionDigits:2});
+    document.getElementById('summary-kes').textContent    = '≈ KES ' + (PRICE_KES * g).toLocaleString();
+  }
+
+  sel.addEventListener('change', updateSummary);
+  updateSummary();
+</script>
 {% endblock %}
