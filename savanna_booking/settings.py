@@ -3,8 +3,10 @@ from decouple import config, Csv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = config('SECRET_KEY')
-DEBUG = config('DEBUG', cast=bool, default=False)
+
+# Restore these lines
+SECRET_KEY = config('SECRET_KEY', default='your-very-secret-key-here')
+DEBUG = config('DEBUG', cast=bool, default=True) # Set default to True for development
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv(), default='localhost,127.0.0.1')
 
 INSTALLED_APPS = [
@@ -106,7 +108,8 @@ MPESA_CONSUMER_KEY    = config('MPESA_CONSUMER_KEY')
 MPESA_CONSUMER_SECRET = config('MPESA_CONSUMER_SECRET')
 MPESA_SHORTCODE       = config('MPESA_SHORTCODE')
 MPESA_PASSKEY         = config('MPESA_PASSKEY')
-MPESA_CALLBACK_URL    = config('MPESA_CALLBACK_URL')
+# settings.py around line 111
+MPESA_CALLBACK_URL = config('MPESA_CALLBACK_URL', default='https://example.com/callback')
 
 # ── Email (optional — for booking confirmations) ──────────────
 EMAIL_BACKEND = config('EMAIL_BACKEND',
