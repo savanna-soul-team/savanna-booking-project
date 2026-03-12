@@ -360,128 +360,65 @@
 
 <div class="hub-page">
 
-  <!-- HERO -->
-  <header class="hub-hero">
-    <p class="hub-eyebrow">African Destinations</p>
-    <h1 class="hub-h1">Choose Your <em>Adventure</em></h1>
-    <p class="hub-sub">Three extraordinary countries. Infinite memories.</p>
-    <div class="hub-rule"></div>
-  </header>
-
-  <!-- COUNTRY CAROUSEL -->
-  <section class="hub-carousel-section">
-    <div class="hub-track-wrap" id="hubTrackWrap">
-      <div class="hub-track" id="hubTrack">
-
-        <!-- ── KENYA ── -->
-        <a href="{% url 'kenya_destinations' %}"
-           class="hub-card {% if request.resolver_match.url_name == 'kenya_destinations' %}active{% endif %}">
-          <div class="hub-card-img-wrap">
-            <img class="hub-card-img"
-                 src="https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=800&q=80"
-                 alt="Kenya — Maasai Mara" loading="lazy"/>
-            <div class="hub-card-overlay">
-              <span class="hub-flag">🇰🇪</span>
-              <span class="hub-country-name">Kenya</span>
-              <span class="hub-country-sub">East Africa</span>
-            </div>
-          </div>
-          <div class="hub-card-body">
-            <p class="hub-card-desc">Where the Great Migration thunders across the Maasai Mara, elephants roam beneath Kilimanjaro, and the Indian Ocean meets ancient Swahili culture.</p>
-            <div class="hub-highlights">
-              <span class="hub-highlight">Maasai Mara</span>
-              <span class="hub-highlight">Amboseli</span>
-              <span class="hub-highlight">Diani Beach</span>
-              <span class="hub-highlight">Lamu</span>
-              <span class="hub-highlight">Mt. Kenya</span>
-            </div>
-            <div class="hub-cta">
-              Explore Kenya
-              <span class="hub-cta-arrow">&#8594;</span>
-            </div>
-          </div>
-        </a>
-
-        <!-- ── SOUTH AFRICA ── -->
-        <a href="{% url 'destinations_south_africa' %}"
-           class="hub-card {% if request.resolver_match.url_name == 'destinations_south_africa' %}active{% endif %}">
-          <div class="hub-card-img-wrap">
-            <img class="hub-card-img"
-                 src="https://images.unsplash.com/photo-1580060839134-75a5edca2e99?w=800&q=80"
-                 alt="South Africa — Cape Town" loading="lazy"/>
-            <div class="hub-card-overlay">
-              <span class="hub-flag">🇿🇦</span>
-              <span class="hub-country-name">South Africa</span>
-              <span class="hub-country-sub">Southern Africa</span>
-            </div>
-          </div>
-          <div class="hub-card-body">
-            <p class="hub-card-desc">Table Mountain rising above the Atlantic, Kruger's Big Five, Cape Winelands' rolling vineyards, and the dramatic Garden Route coastline.</p>
-            <div class="hub-highlights">
-              <span class="hub-highlight">Cape Town</span>
-              <span class="hub-highlight">Kruger</span>
-              <span class="hub-highlight">Winelands</span>
-              <span class="hub-highlight">Drakensberg</span>
-              <span class="hub-highlight">Garden Route</span>
-            </div>
-            <div class="hub-cta">
-              Explore South Africa
-              <span class="hub-cta-arrow">&#8594;</span>
-            </div>
-          </div>
-        </a>
-
-        <!-- ── TANZANIA ── -->
-        <a href="{% url 'destinations_tanzania' %}"
-           class="hub-card {% if request.resolver_match.url_name == 'destinations_tanzania' %}active{% endif %}">
-          <div class="hub-card-img-wrap">
-            <img class="hub-card-img"
-                 src="https://images.unsplash.com/photo-1621414050946-1b6f2540ef6b?w=800&q=80"
-                 alt="Tanzania — Kilimanjaro" loading="lazy"/>
-            <div class="hub-card-overlay">
-              <span class="hub-flag">🇹🇿</span>
-              <span class="hub-country-name">Tanzania</span>
-              <span class="hub-country-sub">East Africa</span>
-            </div>
-          </div>
-          <div class="hub-card-body">
-            <p class="hub-card-desc">The Serengeti's endless plains, Zanzibar's turquoise shores, Kilimanjaro's glacial summit, and the untouched wilderness of Nyerere.</p>
-            <div class="hub-highlights">
-              <span class="hub-highlight">Serengeti</span>
-              <span class="hub-highlight">Zanzibar</span>
-              <span class="hub-highlight">Kilimanjaro</span>
-              <span class="hub-highlight">Ngorongoro</span>
-              <span class="hub-highlight">Pemba Island</span>
-            </div>
-            <div class="hub-cta">
-              Explore Tanzania
-              <span class="hub-cta-arrow">&#8594;</span>
-            </div>
-          </div>
-        </a>
-
-      </div><!-- /hub-track -->
-    </div><!-- /hub-track-wrap -->
-
-    <!-- Controls -->
-    <div class="hub-controls">
-      <button class="hub-btn-nav" id="hubBtnPrev" aria-label="Previous">&#8592;</button>
-      <div class="hub-dots" id="hubDots"></div>
-      <button class="hub-btn-nav" id="hubBtnNext" aria-label="Next">&#8594;</button>
+<a href="{% url 'destination_filter' 'kenya' %}"
+   class="hub-card {% if selected_country == 'Kenya' %}active{% endif %}">
+  <div class="hub-card-img-wrap">
+    <img class="hub-card-img" src="https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=800&q=80" alt="Kenya" loading="lazy"/>
+    <div class="hub-card-overlay">
+      <span class="hub-flag">🇰🇪</span>
+      <span class="hub-country-name">Kenya</span>
+      <span class="hub-country-sub">East Africa</span>
     </div>
-  </section>
+  </div>
+  <div class="hub-card-body">
+    <p class="hub-card-desc">Where the Great Migration thunders across the Maasai Mara and elephants roam beneath Kilimanjaro.</p>
+    <div class="hub-highlights">
+      <span class="hub-highlight">Maasai Mara</span>
+      <span class="hub-highlight">Diani Beach</span>
+    </div>
+    <div class="hub-cta">Explore Kenya <span class="hub-cta-arrow">&#8594;</span></div>
+  </div>
+</a>
 
-  <!-- STATS STRIP -->
-  <div class="hub-stats">
-    <div class="hub-stat">
-      <span class="hub-stat-num">3</span>
-      <span class="hub-stat-label">Countries</span>
+<a href="{% url 'destination_filter' 'south africa' %}"
+   class="hub-card {% if selected_country == 'South Africa' %}active{% endif %}">
+  <div class="hub-card-img-wrap">
+    <img class="hub-card-img" src="https://images.unsplash.com/photo-1580060839134-75a5edca2e99?w=800&q=80" alt="South Africa" loading="lazy"/>
+    <div class="hub-card-overlay">
+      <span class="hub-flag">🇿🇦</span>
+      <span class="hub-country-name">South Africa</span>
+      <span class="hub-country-sub">Southern Africa</span>
     </div>
-    <div class="hub-stat">
-      <span class="hub-stat-num">22</span>
-      <span class="hub-stat-label">Destinations</span>
+  </div>
+  <div class="hub-card-body">
+    <p class="hub-card-desc">Table Mountain rising above the Atlantic and the dramatic Big Five safaris in Kruger.</p>
+    <div class="hub-highlights">
+      <span class="hub-highlight">Cape Town</span>
+      <span class="hub-highlight">Kruger</span>
     </div>
-    <div class="hub-stat">
+    <div class="hub-cta">Explore South Africa <span class="hub-cta-arrow">&#8594;</span></div>
+  </div>
+</a>
+
+<a href="{% url 'destination_filter' 'tanzania' %}"
+   class="hub-card {% if selected_country == 'Tanzania' %}active{% endif %}">
+  <div class="hub-card-img-wrap">
+    <img class="hub-card-img" src="https://images.unsplash.com/photo-1621414050946-1b6f2540ef6b?w=800&q=80" alt="Tanzania" loading="lazy"/>
+    <div class="hub-card-overlay">
+      <span class="hub-flag">🇹🇿</span>
+      <span class="hub-country-name">Tanzania</span>
+      <span class="hub-country-sub">East Africa</span>
+    </div>
+  </div>
+  <div class="hub-card-body">
+    <p class="hub-card-desc">The Serengeti's endless plains and Zanzibar's turquoise shores.</p>
+    <div class="hub-highlights">
+      <span class="hub-highlight">Serengeti</span>
+      <span class="hub-highlight">Zanzibar</span>
+    </div>
+    <div class="hub-cta">Explore Tanzania <span class="hub-cta-arrow">&#8594;</span></div>
+  </div>
+</a>
       <span class="hub-stat-num">∞</span>
       <span class="hub-stat-label">Memories</span>
     </div>

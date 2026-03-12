@@ -80,32 +80,39 @@
 
   <p class="section-sub" style="color: #4a4a4a; margin-bottom: 40px; font-size: 1.1rem;">Filter by destination or activity type to find your perfect African adventure.</p>
 
-  <div class="filters" style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:50px;">
-    <a href="{% url 'tour_list' %}" class="filter-btn {% if not selected_country %}active{% endif %}" style="background:#000; color:#fff; border-color:#000;">
-      <span>🌍</span> All
-    </a>
-    <a href="{% url 'destination_filter' 'kenya' %}" class="filter-btn {% if selected_country == 'Kenya' %}active{% endif %}">
-      <span>🇰🇪</span> Kenya
-    </a>
-    <a href="{% url 'destination_filter' 'tanzania' %}" class="filter-btn {% if selected_country == 'Tanzania' %}active{% endif %}">
-      <span>🇹🇿</span> Tanzania
-    </a>
-    <a href="{% url 'destination_filter' 'south africa' %}" class="filter-btn {% if selected_country == 'South Africa' %}active{% endif %}">
-      <span>🇿🇦</span> South Africa
-    </a>
-    <a href="{% url 'destination_filter' 'rwanda' %}" class="filter-btn {% if selected_country == 'Rwanda' %}active{% endif %}">
-      <span>🇷🇼</span> Rwanda
-    </a>
-    <a href="{% url 'destination_filter' 'egypt' %}" class="filter-btn {% if selected_country == 'Egypt' %}active{% endif %}">
-      <span>🇪🇬</span> Egypt
-    </a>
-    <a href="{% url 'destination_filter' 'morocco' %}" class="filter-btn {% if selected_country == 'Morocco' %}active{% endif %}">
-      <span>🇲🇦</span> Morocco
-    </a>
-    <a href="{% url 'destination_filter' 'botswana' %}" class="filter-btn {% if selected_country == 'Botswana' %}active{% endif %}">
-      <span>🇧🇼</span> Botswana
-    </a>
-  </div>
+ <div class="filters" style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:50px;">
+  <a href="{% url 'tour_list' %}" class="filter-btn {% if not selected_country %}active{% endif %}" style="background:#000; color:#fff; border-color:#000;">
+    <span>🌍</span> All
+  </a>
+
+  <a href="{% url 'destination_filter' 'kenya' %}" class="filter-btn {% if selected_country == 'Kenya' %}active{% endif %}">
+    <span>🇰🇪</span> Kenya
+  </a>
+
+  <a href="{% url 'destination_filter' 'south africa' %}" class="filter-btn {% if selected_country == 'South Africa' %}active{% endif %}">
+     <span>🇹🇿</span>Tanzania
+  </a>
+
+  <a href="{% url 'destination_filter' 'tanzania' %}" class="filter-btn {% if selected_country == 'Tanzania' %}active{% endif %}">
+    <span>🇿🇦</span> South Africa
+  </a>
+
+  <a href="{% url 'destination_filter' 'rwanda' %}" class="filter-btn {% if selected_country == 'Rwanda' %}active{% endif %}">
+    <span>🇷🇼</span> Rwanda
+  </a>
+
+  <a href="{% url 'destination_filter' 'egypt' %}" class="filter-btn {% if selected_country == 'Egypt' %}active{% endif %}">
+    <span>🇪🇬</span> Egypt
+  </a>
+
+  <a href="{% url 'destination_filter' 'morocco' %}" class="filter-btn {% if selected_country == 'Morocco' %}active{% endif %}">
+    <span>🇲🇦</span> Morocco
+  </a>
+
+  <a href="{% url 'destination_filter' 'botswana' %}" class="filter-btn {% if selected_country == 'Botswana' %}active{% endif %}">
+    <span>🇧🇼</span> Botswana
+  </a>
+</div>
 
   {% if tours %}
   <div class="tours-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 32px;">

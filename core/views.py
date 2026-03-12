@@ -272,16 +272,26 @@ import os
 from django.shortcuts import render
 from .models import Tour
 
-
 def destination_filter(request, country_name):
+    # 1. Precise Filtering: Use iexact if your DB names are clean
     tours = Tour.objects.filter(location__icontains=country_name)
 
-    # Logic: Look for a template named 'kenya.html' or 'south-africa.html'
-    # Fallback to 'tour_list.html' if the specific one doesn't exist
-    template_name = f'core/{country_name.lower().replace(" ", "-")}.html'
+    # 2. Filename Standardization
+    # This turns 'South Africa' into 'south-africa'
+    # and 'Tanzania ' (with a space) into 'tanzania'
+    clean_name = country_name.strip().lower().replace(" ", "-")
 
-    # We check if the file exists; if not, use the default
-    return render(request, [template_name, 'core/tour_list.html'], {
+    # 3. Terminal Debugger (Look at your Pycharm console!)
+    print(f"--- DEBUG: User clicked {country_name} | Looking for: core/{clean_name}.html ---")
+
+    # 4. The Template List
+    templates = [
+        f'core/{clean_name}.html',  # Choice A
+        'core/tour_list.html'       # Choice B (Fallback)
+    ]
+
+    return render(request, templates, {
         'tours': tours,
         'selected_country': country_name.title()
     })
+
