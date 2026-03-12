@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Discover Kenya</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --sand:    #e8d5b0;
+      --ochre:   #c9813a;
+      --rust:    #8b3a1e;
+      --dusk:    #1a1208;
+      --sky:     #4a7c9e;
+      --leaf:    #3d6b44;
+      --cream:   #f5ede0;
+    }
+
+    body {
+      background: var(--dusk);
+      font-family: 'Barlow', sans-serif;
+      color: var(--cream);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── HEADER ── */
+    header {
+      text-align: center;
+      padding: 3.5rem 1rem 1.5rem;
+      position: relative;
+    }
+    header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(201,129,58,.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .eyebrow {
+      letter-spacing: .35em;
+      font-size: .7rem;
+      text-transform: uppercase;
+      color: var(--ochre);
+      font-weight: 500;
+      margin-bottom: .6rem;
+    }
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.4rem, 6vw, 4.5rem);
+      font-weight: 700;
+      line-height: 1.05;
+      color: var(--sand);
+    }
+    h1 em { font-style: italic; color: var(--ochre); }
+    .subtitle {
+      margin-top: .9rem;
+      font-size: .95rem;
+      font-weight: 300;
+      color: rgba(232,213,176,.6);
+      letter-spacing: .04em;
+    }
+
+    /* ── CAROUSEL WRAPPER ── */
+    .carousel-section {
+      position: relative;
+      padding: 2.5rem 0 4rem;
+    }
+
+    /* track */
+    .carousel-track-wrap {
+      overflow: hidden;
+      width: 100%;
+      cursor: grab;
+    }
+    .carousel-track-wrap:active { cursor: grabbing; }
+
+    .carousel-track {
+      display: flex;
+      gap: 1.5rem;
+      padding: 1rem 2rem;
+      transition: transform .55s cubic-bezier(.22,.68,0,1.2);
+      will-change: transform;
+    }
+
+    /* ── CARD ── */
+    .card {
+      flex: 0 0 320px;
+      border-radius: 16px;
+      overflow: hidden;
+      position: relative;
+      background: #111;
+      box-shadow: 0 20px 60px rgba(0,0,0,.5);
+      transition: transform .35s ease, box-shadow .35s ease;
+      cursor: pointer;
+      -webkit-user-select: none; user-select: none;
+    }
+    .card:hover {
+      transform: translateY(-8px) scale(1.015);
+      box-shadow: 0 32px 80px rgba(0,0,0,.65);
+    }
+
+    .card-img {
+      width: 100%;
+      height: 260px;
+      object-fit: cover;
+      display: block;
+      filter: brightness(.82);
+      transition: filter .4s ease, transform .6s ease;
+    }
+    .card:hover .card-img {
+      filter: brightness(.95);
+      transform: scale(1.04);
+    }
+
+    .card-badge {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      background: var(--ochre);
+      color: #fff;
+      font-size: .65rem;
+      font-weight: 500;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      padding: .25rem .7rem;
+      border-radius: 50px;
+    }
+
+    .card-body {
+      padding: 1.25rem 1.4rem 1.5rem;
+      background: linear-gradient(160deg, #1e1508 0%, #12100a 100%);
+      border-top: 1px solid rgba(201,129,58,.2);
+    }
+    .card-body h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.25rem;
+      color: var(--sand);
+      margin-bottom: .3rem;
+      font-weight: 700;
+    }
+    .card-region {
+      font-size: .72rem;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--ochre);
+      margin-bottom: .6rem;
+      font-weight: 500;
+    }
+    .card-desc {
+      font-size: .85rem;
+      font-weight: 300;
+      line-height: 1.6;
+      color: rgba(232,213,176,.7);
+      margin-bottom: 1rem;
+    }
+
+    .card-meta {
+      display: flex;
+      gap: .5rem;
+      flex-wrap: wrap;
+    }
+    .tag {
+      font-size: .68rem;
+      letter-spacing: .06em;
+      padding: .22rem .65rem;
+      border-radius: 50px;
+      border: 1px solid rgba(201,129,58,.35);
+      color: rgba(232,213,176,.65);
+      transition: border-color .2s, color .2s;
+    }
+    .card:hover .tag {
+      border-color: var(--ochre);
+      color: var(--sand);
+    }
+
+    /* ── CONTROLS ── */
+    .controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1.2rem;
+      margin-top: 2.2rem;
+    }
+    .btn-nav {
+      width: 46px; height: 46px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(201,129,58,.45);
+      background: rgba(201,129,58,.08);
+      color: var(--ochre);
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .2s, border-color .2s, transform .2s;
+      backdrop-filter: blur(4px);
+    }
+    .btn-nav:hover {
+      background: rgba(201,129,58,.22);
+      border-color: var(--ochre);
+      transform: scale(1.1);
+    }
+
+    .dots {
+      display: flex;
+      gap: .5rem;
+    }
+    .dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: rgba(201,129,58,.28);
+      cursor: pointer;
+      transition: background .25s, transform .25s;
+    }
+    .dot.active {
+      background: var(--ochre);
+      transform: scale(1.4);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 2rem 1rem 3rem;
+      font-size: .75rem;
+      letter-spacing: .08em;
+      color: rgba(232,213,176,.25);
+    }
+    footer a { color: var(--ochre); text-decoration: none; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 600px) {
+      .card { flex: 0 0 82vw; }
+      .carousel-track { padding: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <p class="eyebrow">East Africa's Crown Jewel</p>
+    <h1>Discover <em>Kenya</em></h1>
+    <p class="subtitle">From the savannah to the sea — extraordinary awaits.</p>
+  </header>
+
+  <section class="carousel-section">
+    <div class="carousel-track-wrap" id="trackWrap">
+      <div class="carousel-track" id="track">
+
+        <!-- Card 1 -->
+        <div class="card">
+          <img class="card-img"
+               src="https://unsplash.com/photos/red-and-yellow-hot-air-balloon-over-field-with-zebras-kjOBqwMUnWw"
+               alt="Maasai Mara" loading="lazy"/>
+          <span class="card-badge">Top Pick</span>
+          <div class="card-body">
+            <p class="card-region">Narok County</p>
+            <h2>Maasai Mara</h2>
+            <p class="card-desc">Witness the world's greatest wildlife spectacle — the Great Migration — as millions of wildebeest thunder across the plains each year.</p>
+            <div class="card-meta">
+              <span class="tag">Wildlife</span>
+              <span class="tag">Safari</span>
+              <span class="tag">Migration</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="card">
+          <img class="card-img"
+               src="https://images.unsplash.com/photo-1580654712603-eb43273aff33?w=640&q=80"
+               alt="Amboseli National Park" loading="lazy"/>
+          <span class="card-badge">Iconic</span>
+          <div class="card-body">
+            <p class="card-region">Kajiado County</p>
+            <h2>Amboseli</h2>
+            <p class="card-desc">Elephant herds roam beneath the snow-capped silhouette of Mount Kilimanjaro — Africa's most iconic wildlife portrait.</p>
+            <div class="card-meta">
+              <span class="tag">Elephants</span>
+              <span class="tag">Mt. Kilimanjaro</span>
+              <span class="tag">Photography</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="card">
+          <img class="card-img"
+               src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=640&q=80"
+               alt="Diani Beach" loading="lazy"/>
+          <span class="card-badge">Beach</span>
+          <div class="card-body">
+            <p class="card-region">Kwale County</p>
+            <h2>Diani Beach</h2>
+            <p class="card-desc">Powder-white sands, turquoise Indian Ocean waters, and swaying palms define this award-winning coastal paradise south of Mombasa.</p>
+            <div class="card-meta">
+              <span class="tag">Ocean</span>
+              <span class="tag">Snorkeling</span>
+              <span class="tag">Relaxation</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="card">
+          <img class="card-img"
+               src="https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=640&q=80"
+               alt="Lake Nakuru" loading="lazy"/>
+          <span class="card-badge">Nature</span>
+          <div class="card-body">
+            <p class="card-region">Nakuru County</p>
+            <h2>Lake Nakuru</h2>
+            <p class="card-desc">A shimmering soda lake that turns pink with flamingos, also home to both black and white rhinos within its protected shores.</p>
+            <div class="card-meta">
+              <span class="tag">Flamingos</span>
+              <span class="tag">Rhinos</span>
+              <span class="tag">Birding</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 5 -->
+        <div class="card">
+          <img class="card-img"
+               src="https://images.unsplash.com/photo-1489493887464-892be6d1daae?w=640&q=80"
+               alt="Lamu Island" loading="lazy"/>
+          <span class="card-badge">Heritage</span>
+          <div class="card-body">
+            <p class="card-region">Lamu County</p>
+            <h2>Lamu Island</h2>
+            <p class="card-desc">A UNESCO World Heritage old town where Swahili culture, ancient Arab architecture, and a car-free way of life create timeless magic.</p>
+            <div class="card-meta">
+              <span class="tag">Culture</span>
+              <span class="tag">UNESCO</span>
+              <span class="tag">Dhow Sailing</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 6 -->
+        <div class="card">
+          <img class="card-img"
+               src="https://images.unsplash.com/photo-1518709766631-a6a7f45921c3?w=640&q=80"
+               alt="Mount Kenya" loading="lazy"/>
+          <span class="card-badge">Adventure</span>
+          <div class="card-body">
+            <p class="card-region">Central Kenya</p>
+            <h2>Mount Kenya</h2>
+            <p class="card-desc">Africa's second-highest peak challenges trekkers with glacial valleys, giant lobelias, and summit views stretching to the horizon.</p>
+            <div class="card-meta">
+              <span class="tag">Trekking</span>
+              <span class="tag">Summit</span>
+              <span class="tag">Glaciers</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 7 -->
+        <div class="card">
+          <img class="card-img"
+               src="https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=640&q=80"
+               alt="Tsavo National Park" loading="lazy"/>
+          <span class="card-badge">Wild</span>
+          <div class="card-body">
+            <p class="card-region">Coast & Eastern</p>
+            <h2>Tsavo</h2>
+            <p class="card-desc">Kenya's largest national park — a vast red-dust wilderness of "red elephants", Mzima Springs, and dramatic volcanic landscapes.</p>
+            <div class="card-meta">
+              <span class="tag">Big Five</span>
+              <span class="tag">Vast Wilderness</span>
+              <span class="tag">Scenic Drives</span>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /track -->
+    </div><!-- /track-wrap -->
+
+    <!-- Controls -->
+    <div class="controls">
+      <button class="btn-nav" id="btnPrev" aria-label="Previous">&#8592;</button>
+      <div class="dots" id="dots"></div>
+      <button class="btn-nav" id="btnNext" aria-label="Next">&#8594;</button>
+    </div>
+  </section>
+
+  <footer>
+    &copy; 2026 Discover Kenya &mdash; <a href="#">Plan your journey</a>
+  </footer>
+
+  <script>
+    const track    = document.getElementById('track');
+    const wrap     = document.getElementById('trackWrap');
+    const dotsEl   = document.getElementById('dots');
+    const btnPrev  = document.getElementById('btnPrev');
+    const btnNext  = document.getElementById('btnNext');
+    const cards    = Array.from(track.querySelectorAll('.card'));
+    const total    = cards.length;
+    let current    = 0;
+
+    /* ── build dots ── */
+    cards.forEach((_, i) => {
+      const d = document.createElement('button');
+      d.className = 'dot' + (i === 0 ? ' active' : '');
+      d.setAttribute('aria-label', `Go to slide ${i+1}`);
+      d.addEventListener('click', () => goTo(i));
+      dotsEl.appendChild(d);
+    });
+
+    function getDotEls() { return Array.from(dotsEl.querySelectorAll('.dot')); }
+
+    function getOffset(index) {
+      const wrapW   = wrap.offsetWidth;
+      const cardEl  = cards[index];
+      const cardL   = cardEl.offsetLeft;
+      const cardW   = cardEl.offsetWidth;
+      /* centre the active card */
+      return Math.max(0, cardL - (wrapW - cardW) / 2);
+    }
+
+    function goTo(index) {
+      current = (index + total) % total;
+      track.style.transform = `translateX(-${getOffset(current)}px)`;
+      getDotEls().forEach((d, i) => d.classList.toggle('active', i === current));
+    }
+
+    btnPrev.addEventListener('click', () => goTo(current - 1));
+    btnNext.addEventListener('click', () => goTo(current + 1));
+
+    /* keyboard */
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowLeft')  goTo(current - 1);
+      if (e.key === 'ArrowRight') goTo(current + 1);
+    });
+
+    /* touch / drag */
+    let startX = 0, dragging = false, moved = false;
+    wrap.addEventListener('mousedown',  e => { startX = e.clientX; dragging = true; moved = false; });
+    wrap.addEventListener('touchstart', e => { startX = e.touches[0].clientX; dragging = true; moved = false; }, {passive:true});
+    wrap.addEventListener('mousemove',  e => { if(dragging && Math.abs(e.clientX - startX) > 5) moved = true; });
+    function endDrag(endX) {
+      if (!dragging) return;
+      dragging = false;
+      const diff = startX - endX;
+      if (Math.abs(diff) > 50) goTo(diff > 0 ? current + 1 : current - 1);
+    }
+    wrap.addEventListener('mouseup',   e => endDrag(e.clientX));
+    wrap.addEventListener('touchend',  e => endDrag(e.changedTouches[0].clientX));
+    /* prevent click-through on drag */
+    wrap.addEventListener('click', e => { if (moved) e.stopPropagation(); });
+
+    /* recalc on resize */
+    window.addEventListener('resize', () => goTo(current));
+  </script>
+</body>
+</html>

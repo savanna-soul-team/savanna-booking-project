@@ -1,0 +1,509 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;700&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet"/>
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --teal:    #1a6b6b;
+    --aqua:    #2db3a0;
+    --amber:   #e8a135;
+    --night:   #080f0f;
+    --charcoal:#111a1a;
+    --mist:    #d6eeeb;
+    --ivory:   #f2ede4;
+  }
+
+  .tz-page {
+    background: var(--night);
+    color: var(--ivory);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── HEADER ── */
+  .tz-header {
+    position: relative;
+    text-align: center;
+    padding: 4rem 1rem 2rem;
+    overflow: hidden;
+  }
+  .tz-header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 70% 60% at 50% -5%, rgba(26,107,107,.3) 0%, transparent 65%),
+      radial-gradient(ellipse 30% 40% at 10% 90%, rgba(45,179,160,.1) 0%, transparent 55%);
+    pointer-events: none;
+  }
+  /* animated teal ring */
+  .tz-header::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -60%);
+    width: 340px; height: 340px;
+    border-radius: 50%;
+    border: 1px solid rgba(45,179,160,.12);
+    animation: ringPulse 4s ease-in-out infinite;
+    pointer-events: none;
+  }
+  @keyframes ringPulse {
+    0%, 100% { transform: translate(-50%,-60%) scale(1);   opacity: .5; }
+    50%       { transform: translate(-50%,-60%) scale(1.08); opacity: .15; }
+  }
+
+  .tz-eyebrow {
+    font-family: 'Unbounded', sans-serif;
+    font-size: .6rem;
+    letter-spacing: .42em;
+    text-transform: uppercase;
+    color: var(--aqua);
+    font-weight: 300;
+    margin-bottom: .8rem;
+    position: relative;
+  }
+  .tz-h1 {
+    font-family: 'Unbounded', sans-serif;
+    font-size: clamp(2rem, 5.5vw, 4.2rem);
+    font-weight: 700;
+    line-height: 1.05;
+    color: var(--mist);
+    position: relative;
+    letter-spacing: -.02em;
+  }
+  .tz-h1 span {
+    color: var(--amber);
+    font-style: italic;
+    font-family: 'Lora', serif;
+    font-weight: 400;
+    font-size: 1.1em;
+  }
+  .tz-subtitle {
+    margin-top: 1rem;
+    font-family: 'Lora', serif;
+    font-size: .95rem;
+    font-style: italic;
+    color: rgba(214,238,235,.45);
+    position: relative;
+  }
+  .tz-divider {
+    width: 80px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--aqua), transparent);
+    margin: 1.8rem auto 0;
+    position: relative;
+  }
+
+  /* ── CAROUSEL ── */
+  .tz-carousel-section {
+    padding: 2.5rem 0 4rem;
+  }
+  .tz-track-wrap {
+    overflow: hidden;
+    width: 100%;
+    cursor: grab;
+  }
+  .tz-track-wrap:active { cursor: grabbing; }
+  .tz-track {
+    display: flex;
+    gap: 1.5rem;
+    padding: 1.2rem 2rem;
+    transition: transform .55s cubic-bezier(.22,.68,0,1.2);
+    will-change: transform;
+  }
+
+  /* ── CARD ── */
+  .tz-card {
+    flex: 0 0 315px;
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    background: var(--charcoal);
+    box-shadow: 0 16px 50px rgba(0,0,0,.55);
+    transition: transform .35s ease, box-shadow .35s ease;
+    cursor: pointer;
+    -webkit-user-select: none; user-select: none;
+    border: 1px solid rgba(45,179,160,.08);
+  }
+  .tz-card:hover {
+    transform: translateY(-8px) scale(1.016);
+    box-shadow: 0 28px 72px rgba(0,0,0,.7), 0 0 0 1px rgba(45,179,160,.2);
+  }
+
+  .tz-img-wrap {
+    position: relative;
+    overflow: hidden;
+    height: 250px;
+  }
+  .tz-card-img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: brightness(.75) saturate(1.15);
+    transition: filter .45s, transform .65s;
+  }
+  .tz-card:hover .tz-card-img {
+    filter: brightness(.9) saturate(1.25);
+    transform: scale(1.07);
+  }
+  .tz-img-wrap::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 55%;
+    background: linear-gradient(to top, rgba(8,15,15,.8), transparent);
+    pointer-events: none;
+  }
+
+  .tz-badge {
+    position: absolute;
+    top: 12px; left: 12px;
+    background: var(--teal);
+    color: rgba(214,238,235,.92);
+    font-family: 'Unbounded', sans-serif;
+    font-size: .55rem;
+    font-weight: 400;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    padding: .28rem .75rem;
+    border-radius: 50px;
+    z-index: 2;
+  }
+  .tz-region {
+    position: absolute;
+    bottom: 10px; right: 12px;
+    font-family: 'Unbounded', sans-serif;
+    font-size: .55rem;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: rgba(214,238,235,.6);
+    z-index: 2;
+  }
+
+  .tz-card-body {
+    padding: 1.2rem 1.4rem 1.45rem;
+    background: linear-gradient(160deg, #0e1919 0%, #080f0f 100%);
+    border-top: 1px solid rgba(45,179,160,.15);
+  }
+  .tz-card-body h2 {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--mist);
+    margin-bottom: .4rem;
+    letter-spacing: -.01em;
+    line-height: 1.3;
+  }
+  .tz-card-desc {
+    font-family: 'Lora', serif;
+    font-size: .84rem;
+    line-height: 1.65;
+    color: rgba(214,238,235,.6);
+    margin-bottom: 1rem;
+  }
+  .tz-tags {
+    display: flex;
+    gap: .42rem;
+    flex-wrap: wrap;
+  }
+  .tz-tag {
+    font-family: 'Unbounded', sans-serif;
+    font-size: .55rem;
+    letter-spacing: .06em;
+    padding: .2rem .6rem;
+    border-radius: 50px;
+    border: 1px solid rgba(45,179,160,.28);
+    color: rgba(214,238,235,.55);
+    transition: border-color .2s, color .2s;
+  }
+  .tz-card:hover .tz-tag {
+    border-color: var(--aqua);
+    color: var(--mist);
+  }
+
+  /* ── CONTROLS ── */
+  .tz-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.2rem;
+    margin-top: 2.2rem;
+  }
+  .tz-btn-nav {
+    width: 46px; height: 46px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(45,179,160,.35);
+    background: rgba(45,179,160,.07);
+    color: var(--aqua);
+    font-size: 1.15rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .2s, border-color .2s, transform .2s;
+  }
+  .tz-btn-nav:hover {
+    background: rgba(45,179,160,.2);
+    border-color: var(--aqua);
+    transform: scale(1.1);
+  }
+  .tz-dots { display: flex; gap: .5rem; }
+  .tz-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: rgba(45,179,160,.22);
+    cursor: pointer;
+    border: none;
+    transition: background .25s, transform .25s;
+  }
+  .tz-dot.active {
+    background: var(--aqua);
+    transform: scale(1.45);
+  }
+
+  /* ── FOOTER ── */
+  .tz-footer {
+    text-align: center;
+    padding: 1.8rem 1rem 3rem;
+    font-family: 'Unbounded', sans-serif;
+    font-size: .62rem;
+    letter-spacing: .1em;
+    color: rgba(214,238,235,.18);
+  }
+  .tz-footer a { color: var(--aqua); text-decoration: none; }
+
+  @media (max-width: 600px) {
+    .tz-card { flex: 0 0 83vw; }
+    .tz-track { padding: 1rem; }
+  }
+</style>
+
+<div class="tz-page">
+
+  <header class="tz-header">
+    <p class="tz-eyebrow">East Africa's Wild Heart</p>
+    <h1 class="tz-h1">Discover <span>Tanzania</span></h1>
+    <p class="tz-subtitle">Serengeti skies, Zanzibar shores & the roof of Africa.</p>
+    <div class="tz-divider"></div>
+  </header>
+
+  <section class="tz-carousel-section">
+    <div class="tz-track-wrap" id="tzTrackWrap">
+      <div class="tz-track" id="tzTrack">
+
+        <!-- Card 1 — Serengeti -->
+        <div class="tz-card">
+          <div class="tz-img-wrap">
+            <img class="tz-card-img"
+                 src="https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=640&q=80"
+                 alt="Serengeti" loading="lazy"/>
+            <span class="tz-badge">Iconic</span>
+            <span class="tz-region">Mara Region</span>
+          </div>
+          <div class="tz-card-body">
+            <h2>Serengeti</h2>
+            <p class="tz-card-desc">The endless plains where two million wildebeest, zebra, and gazelle migrate in an eternal circle — the greatest wildlife show on Earth.</p>
+            <div class="tz-tags">
+              <span class="tz-tag">Migration</span>
+              <span class="tz-tag">Big Five</span>
+              <span class="tz-tag">Hot Air Balloon</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2 — Zanzibar -->
+        <div class="tz-card">
+          <div class="tz-img-wrap">
+            <img class="tz-card-img"
+                 src="https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?w=640&q=80"
+                 alt="Zanzibar" loading="lazy"/>
+            <span class="tz-badge">Paradise</span>
+            <span class="tz-region">Zanzibar Archipelago</span>
+          </div>
+          <div class="tz-card-body">
+            <h2>Zanzibar</h2>
+            <p class="tz-card-desc">Spice-scented Stone Town, coral reefs teeming with colour, and powdery white beaches lapped by the warm Indian Ocean.</p>
+            <div class="tz-tags">
+              <span class="tz-tag">Beaches</span>
+              <span class="tz-tag">Snorkeling</span>
+              <span class="tz-tag">Stone Town</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3 — Kilimanjaro -->
+        <div class="tz-card">
+          <div class="tz-img-wrap">
+            <img class="tz-card-img"
+                 src="https://images.unsplash.com/photo-1621414050946-1b6f2540ef6b?w=640&q=80"
+                 alt="Mount Kilimanjaro" loading="lazy"/>
+            <span class="tz-badge">Summit</span>
+            <span class="tz-region">Kilimanjaro Region</span>
+          </div>
+          <div class="tz-card-body">
+            <h2>Mount Kilimanjaro</h2>
+            <p class="tz-card-desc">Africa's highest peak rises 5,895 m above the savannah — a bucket-list trek through five distinct climate zones to Uhuru Peak.</p>
+            <div class="tz-tags">
+              <span class="tz-tag">Trekking</span>
+              <span class="tz-tag">5,895 m</span>
+              <span class="tz-tag">Glaciers</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 4 — Ngorongoro -->
+        <div class="tz-card">
+          <div class="tz-img-wrap">
+            <img class="tz-card-img"
+                 src="https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=640&q=80"
+                 alt="Ngorongoro Crater" loading="lazy"/>
+            <span class="tz-badge">UNESCO</span>
+            <span class="tz-region">Arusha Region</span>
+          </div>
+          <div class="tz-card-body">
+            <h2>Ngorongoro Crater</h2>
+            <p class="tz-card-desc">The world's largest intact volcanic caldera forms a natural enclosure for one of Africa's densest concentrations of wildlife.</p>
+            <div class="tz-tags">
+              <span class="tz-tag">Crater Safari</span>
+              <span class="tz-tag">Black Rhino</span>
+              <span class="tz-tag">UNESCO</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 5 — Selous -->
+        <div class="tz-card">
+          <div class="tz-img-wrap">
+            <img class="tz-card-img"
+                 src="https://images.unsplash.com/photo-1551085254-e96b210db58a?w=640&q=80"
+                 alt="Selous Game Reserve" loading="lazy"/>
+            <span class="tz-badge">Off the Beaten Path</span>
+            <span class="tz-region">Morogoro Region</span>
+          </div>
+          <div class="tz-card-body">
+            <h2>Nyerere National Park</h2>
+            <p class="tz-card-desc">Africa's largest game reserve — wild, remote, and traversed by the mighty Rufiji River, home to hippos, crocs, and vast elephant herds.</p>
+            <div class="tz-tags">
+              <span class="tz-tag">Boat Safari</span>
+              <span class="tz-tag">Walking Safari</span>
+              <span class="tz-tag">Wild Dogs</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 6 — Tarangire -->
+        <div class="tz-card">
+          <div class="tz-img-wrap">
+            <img class="tz-card-img"
+                 src="https://images.unsplash.com/photo-1504173010664-32509107932f?w=640&q=80"
+                 alt="Tarangire National Park" loading="lazy"/>
+            <span class="tz-badge">Hidden Gem</span>
+            <span class="tz-region">Manyara Region</span>
+          </div>
+          <div class="tz-card-body">
+            <h2>Tarangire</h2>
+            <p class="tz-card-desc">Ancient baobab trees tower over thousands of elephants along the seasonal Tarangire River — a quieter, deeply atmospheric alternative to the Serengeti.</p>
+            <div class="tz-tags">
+              <span class="tz-tag">Elephants</span>
+              <span class="tz-tag">Baobabs</span>
+              <span class="tz-tag">Bird Watching</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 7 — Pemba Island -->
+        <div class="tz-card">
+          <div class="tz-img-wrap">
+            <img class="tz-card-img"
+                 src="https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=640&q=80"
+                 alt="Pemba Island" loading="lazy"/>
+            <span class="tz-badge">Untouched</span>
+            <span class="tz-region">Zanzibar Archipelago</span>
+          </div>
+          <div class="tz-card-body">
+            <h2>Pemba Island</h2>
+            <p class="tz-card-desc">The "Green Island" — lush clove plantations, near-vertical coral walls for world-class diving, and a serene escape from the tourist trail.</p>
+            <div class="tz-tags">
+              <span class="tz-tag">Diving</span>
+              <span class="tz-tag">Spice Tours</span>
+              <span class="tz-tag">Secluded</span>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /track -->
+    </div><!-- /track-wrap -->
+
+    <div class="tz-controls">
+      <button class="tz-btn-nav" id="tzBtnPrev" aria-label="Previous">&#8592;</button>
+      <div class="tz-dots" id="tzDots"></div>
+      <button class="tz-btn-nav" id="tzBtnNext" aria-label="Next">&#8594;</button>
+    </div>
+  </section>
+
+  <footer class="tz-footer">
+    &copy; 2026 Discover Tanzania &mdash; <a href="#">Plan your safari</a>
+  </footer>
+
+</div><!-- /tz-page -->
+
+<script>
+  (function () {
+    const track   = document.getElementById('tzTrack');
+    const wrap    = document.getElementById('tzTrackWrap');
+    const dotsEl  = document.getElementById('tzDots');
+    const btnPrev = document.getElementById('tzBtnPrev');
+    const btnNext = document.getElementById('tzBtnNext');
+    const cards   = Array.from(track.querySelectorAll('.tz-card'));
+    const total   = cards.length;
+    let current   = 0;
+
+    cards.forEach((_, i) => {
+      const d = document.createElement('button');
+      d.className = 'tz-dot' + (i === 0 ? ' active' : '');
+      d.setAttribute('aria-label', `Go to slide ${i + 1}`);
+      d.addEventListener('click', () => goTo(i));
+      dotsEl.appendChild(d);
+    });
+
+    function getDots() { return Array.from(dotsEl.querySelectorAll('.tz-dot')); }
+
+    function getOffset(index) {
+      const wrapW  = wrap.offsetWidth;
+      const card   = cards[index];
+      return Math.max(0, card.offsetLeft - (wrapW - card.offsetWidth) / 2);
+    }
+
+    function goTo(index) {
+      current = (index + total) % total;
+      track.style.transform = `translateX(-${getOffset(current)}px)`;
+      getDots().forEach((d, i) => d.classList.toggle('active', i === current));
+    }
+
+    btnPrev.addEventListener('click', () => goTo(current - 1));
+    btnNext.addEventListener('click', () => goTo(current + 1));
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowLeft')  goTo(current - 1);
+      if (e.key === 'ArrowRight') goTo(current + 1);
+    });
+
+    let startX = 0, dragging = false, moved = false;
+    wrap.addEventListener('mousedown',  e => { startX = e.clientX; dragging = true; moved = false; });
+    wrap.addEventListener('touchstart', e => { startX = e.touches[0].clientX; dragging = true; moved = false; }, { passive: true });
+    wrap.addEventListener('mousemove',  e => { if (dragging && Math.abs(e.clientX - startX) > 5) moved = true; });
+    function endDrag(endX) {
+      if (!dragging) return;
+      dragging = false;
+      if (Math.abs(startX - endX) > 50) goTo(startX - endX > 0 ? current + 1 : current - 1);
+    }
+    wrap.addEventListener('mouseup',  e => endDrag(e.clientX));
+    wrap.addEventListener('touchend', e => endDrag(e.changedTouches[0].clientX));
+    wrap.addEventListener('click', e => { if (moved) e.stopPropagation(); });
+    window.addEventListener('resize', () => goTo(current));
+  })();
+</script>
+
+{% endblock %}

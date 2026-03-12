@@ -11,10 +11,33 @@ from .models import User, Tour, Booking, MpesaTransaction
 from .forms import RegisterForm, LoginForm, BookingForm, PaymentForm
 from django_daraja.mpesa.core import MpesaClient
 from .forms import RegisterForm, LoginForm, BookingForm, PaymentForm, ProfileForm
-
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 logger = logging.getLogger(__name__)
 
 
+
+def send_booking_email(user_email, tour_name, price):
+    subject = f'Your Adventure Awaits: {tour_name} Confirmed!'
+
+    # 1. Create the HTML version of the email
+    html_message = render_to_string('emails/booking_confirmed.html', {
+        'tour_name': tour_name,
+        'price': price,
+    })
+
+    # 2. Create a plain-text version for older email clients
+    plain_message = strip_tags(html_message)
+
+    # 3. Send it using your settings.py config
+    send_mail(
+        subject,
+        plain_message,
+        'Savanna & Soul <noreply@savannabooking.com>',
+        [user_email],
+        html_message=html_message,
+    )
 # ── Tours ─────────────────────────────────────────────────────
 def tour_list(request):
     country  = request.GET.get('country', '')
@@ -243,3 +266,22 @@ def profile_view(request):
     else:
         form = ProfileForm(instance=request.user)
     return render(request, 'core/profile.html', {'form': form})
+
+
+import os
+from django.shortcuts import render
+from .models import Tour
+
+
+def destination_filter(request, country_name):
+    tours = Tour.objects.filter(location__icontains=country_name)
+
+    # Logic: Look for a template named 'kenya.html' or 'south-africa.html'
+    # Fallback to 'tour_list.html' if the specific one doesn't exist
+    template_name = f'core/{country_name.lower().replace(" ", "-")}.html'
+
+    # We check if the file exists; if not, use the default
+    return render(request, [template_name, 'core/tour_list.html'], {
+        'tours': tours,
+        'selected_country': country_name.title()
+    })

@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Discover South Africa</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --wine:    #6b1f2a;
+      --gold:    #c9a84c;
+      --stone:   #d4c5a9;
+      --deep:    #0f0c09;
+      --ocean:   #1b3a4b;
+      --sage:    #4a6741;
+      --ivory:   #f4ede0;
+    }
+
+    body {
+      background: var(--deep);
+      font-family: 'DM Sans', sans-serif;
+      color: var(--ivory);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── HERO HEADER ── */
+    header {
+      position: relative;
+      text-align: center;
+      padding: 4rem 1rem 2rem;
+      overflow: hidden;
+    }
+    header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 80% at 50% -10%, rgba(107,31,42,.28) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 40% at 80% 100%, rgba(27,58,75,.2) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    /* decorative line */
+    header::after {
+      content: '';
+      display: block;
+      width: 60px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin: 1.6rem auto 0;
+    }
+    .eyebrow {
+      letter-spacing: .38em;
+      font-size: .68rem;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 500;
+      margin-bottom: .7rem;
+    }
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.6rem, 7vw, 5rem);
+      font-weight: 700;
+      line-height: 1;
+      color: var(--stone);
+      letter-spacing: -.01em;
+    }
+    h1 em {
+      font-style: italic;
+      color: var(--gold);
+    }
+    .subtitle {
+      margin-top: 1rem;
+      font-size: .9rem;
+      font-weight: 300;
+      color: rgba(212,197,169,.55);
+      letter-spacing: .05em;
+    }
+
+    /* ── CAROUSEL ── */
+    .carousel-section {
+      position: relative;
+      padding: 2.8rem 0 4rem;
+    }
+
+    .carousel-track-wrap {
+      overflow: hidden;
+      width: 100%;
+      cursor: grab;
+    }
+    .carousel-track-wrap:active { cursor: grabbing; }
+
+    .carousel-track {
+      display: flex;
+      gap: 1.6rem;
+      padding: 1.2rem 2rem;
+      transition: transform .55s cubic-bezier(.22,.68,0,1.2);
+      will-change: transform;
+    }
+
+    /* ── CARD ── */
+    .card {
+      flex: 0 0 310px;
+      border-radius: 14px;
+      overflow: hidden;
+      position: relative;
+      background: #111;
+      box-shadow: 0 18px 55px rgba(0,0,0,.55);
+      transition: transform .35s ease, box-shadow .35s ease;
+      cursor: pointer;
+      -webkit-user-select: none; user-select: none;
+    }
+    .card:hover {
+      transform: translateY(-9px) scale(1.018);
+      box-shadow: 0 34px 85px rgba(0,0,0,.7);
+    }
+
+    .card-img-wrap {
+      position: relative;
+      overflow: hidden;
+      height: 255px;
+    }
+    .card-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: brightness(.78) saturate(1.1);
+      transition: filter .45s ease, transform .65s ease;
+    }
+    .card:hover .card-img {
+      filter: brightness(.92) saturate(1.2);
+      transform: scale(1.06);
+    }
+    /* overlay gradient on image */
+    .card-img-wrap::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 50%;
+      background: linear-gradient(to top, rgba(15,12,9,.75), transparent);
+      pointer-events: none;
+    }
+
+    .card-badge {
+      position: absolute;
+      top: 13px;
+      left: 13px;
+      background: var(--wine);
+      color: rgba(244,237,224,.9);
+      font-size: .62rem;
+      font-weight: 500;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      padding: .25rem .72rem;
+      border-radius: 50px;
+      z-index: 2;
+    }
+
+    /* province tag bottom-right of image */
+    .card-province {
+      position: absolute;
+      bottom: 10px;
+      right: 12px;
+      font-size: .62rem;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: rgba(244,237,224,.7);
+      z-index: 2;
+    }
+
+    .card-body {
+      padding: 1.2rem 1.4rem 1.45rem;
+      background: linear-gradient(150deg, #1a1108 0%, #0f0c09 100%);
+      border-top: 1px solid rgba(201,168,76,.18);
+    }
+    .card-body h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.35rem;
+      color: var(--stone);
+      margin-bottom: .35rem;
+      font-weight: 600;
+      line-height: 1.15;
+    }
+    .card-desc {
+      font-size: .83rem;
+      font-weight: 300;
+      line-height: 1.65;
+      color: rgba(212,197,169,.65);
+      margin-bottom: 1rem;
+    }
+    .card-meta {
+      display: flex;
+      gap: .45rem;
+      flex-wrap: wrap;
+    }
+    .tag {
+      font-size: .66rem;
+      letter-spacing: .06em;
+      padding: .2rem .62rem;
+      border-radius: 50px;
+      border: 1px solid rgba(201,168,76,.3);
+      color: rgba(212,197,169,.6);
+      transition: border-color .2s, color .2s;
+    }
+    .card:hover .tag {
+      border-color: var(--gold);
+      color: var(--stone);
+    }
+
+    /* ── CONTROLS ── */
+    .controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1.2rem;
+      margin-top: 2.4rem;
+    }
+    .btn-nav {
+      width: 46px; height: 46px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(201,168,76,.38);
+      background: rgba(201,168,76,.07);
+      color: var(--gold);
+      font-size: 1.15rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .2s, border-color .2s, transform .2s;
+    }
+    .btn-nav:hover {
+      background: rgba(201,168,76,.2);
+      border-color: var(--gold);
+      transform: scale(1.1);
+    }
+    .dots { display: flex; gap: .5rem; }
+    .dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: rgba(201,168,76,.25);
+      cursor: pointer;
+      transition: background .25s, transform .25s;
+      border: none;
+    }
+    .dot.active {
+      background: var(--gold);
+      transform: scale(1.45);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 1.8rem 1rem 3rem;
+      font-size: .72rem;
+      letter-spacing: .08em;
+      color: rgba(212,197,169,.22);
+    }
+    footer a { color: var(--gold); text-decoration: none; }
+
+    @media (max-width: 600px) {
+      .card { flex: 0 0 83vw; }
+      .carousel-track { padding: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <p class="eyebrow">The Rainbow Nation</p>
+    <h1>Discover <em>South Africa</em></h1>
+    <p class="subtitle">Wilderness, wine, waves & wonder — all in one extraordinary country.</p>
+  </header>
+
+  <section class="carousel-section">
+    <div class="carousel-track-wrap" id="trackWrap">
+      <div class="carousel-track" id="track">
+
+        <!-- Card 1 — Cape Town -->
+        <div class="card">
+          <div class="card-img-wrap">
+            <img class="card-img"
+                 src="https://images.unsplash.com/photo-1580060839134-75a5edca2e99?w=640&q=80"
+                 alt="Cape Town" loading="lazy"/>
+            <span class="card-badge">Must See</span>
+            <span class="card-province">Western Cape</span>
+          </div>
+          <div class="card-body">
+            <h2>Cape Town</h2>
+            <p class="card-desc">Where Table Mountain meets the Atlantic — a world-class city of beaches, bold cuisine, and colonial history beneath dramatic cliffs.</p>
+            <div class="card-meta">
+              <span class="tag">Table Mountain</span>
+              <span class="tag">V&A Waterfront</span>
+              <span class="tag">Beaches</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2 — Kruger -->
+        <div class="card">
+          <div class="card-img-wrap">
+            <img class="card-img"
+                 src="https://images.unsplash.com/photo-1516426122078-c23e76319801?w=640&q=80"
+                 alt="Kruger National Park" loading="lazy"/>
+            <span class="card-badge">Big Five</span>
+            <span class="card-province">Limpopo / Mpumalanga</span>
+          </div>
+          <div class="card-body">
+            <h2>Kruger National Park</h2>
+            <p class="card-desc">Africa's premier wildlife sanctuary — nearly two million hectares home to lions, leopards, elephants, buffalo, and rhinos.</p>
+            <div class="card-meta">
+              <span class="tag">Safari</span>
+              <span class="tag">Big Five</span>
+              <span class="tag">Bush Camps</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3 — Garden Route -->
+        <div class="card">
+          <div class="card-img-wrap">
+            <img class="card-img"
+                 src="https://images.unsplash.com/photo-1602526429747-ac387a91d43b?w=640&q=80"
+                 alt="Garden Route" loading="lazy"/>
+            <span class="card-badge">Scenic Drive</span>
+            <span class="card-province">Western & Eastern Cape</span>
+          </div>
+          <div class="card-body">
+            <h2>Garden Route</h2>
+            <p class="card-desc">A legendary coastal drive weaving through ancient forests, lagoons, craggy cliffs and the charming towns of Knysna and Plettenberg Bay.</p>
+            <div class="card-meta">
+              <span class="tag">Road Trip</span>
+              <span class="tag">Tsitsikamma</span>
+              <span class="tag">Whales</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 4 — Winelands -->
+        <div class="card">
+          <div class="card-img-wrap">
+            <img class="card-img"
+                 src="https://images.unsplash.com/photo-1559628233-100c798642d4?w=640&q=80"
+                 alt="Cape Winelands" loading="lazy"/>
+            <span class="card-badge">Gourmet</span>
+            <span class="card-province">Western Cape</span>
+          </div>
+          <div class="card-body">
+            <h2>Cape Winelands</h2>
+            <p class="card-desc">Stellenbosch, Franschhoek, and Paarl — rolling vine-covered valleys surrounded by mountain peaks and world-class Pinotage estates.</p>
+            <div class="card-meta">
+              <span class="tag">Wine Tasting</span>
+              <span class="tag">Fine Dining</span>
+              <span class="tag">Cape Dutch</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 5 — Drakensberg -->
+        <div class="card">
+          <div class="card-img-wrap">
+            <img class="card-img"
+                 src="https://images.unsplash.com/photo-1504198070170-4ca53bb1c1fa?w=640&q=80"
+                 alt="Drakensberg Mountains" loading="lazy"/>
+            <span class="card-badge">Adventure</span>
+            <span class="card-province">KwaZulu-Natal</span>
+          </div>
+          <div class="card-body">
+            <h2>Drakensberg</h2>
+            <p class="card-desc">The "Dragon's Back" — towering basalt amphitheatres, ancient San rock art, and some of the continent's finest hiking and climbing terrain.</p>
+            <div class="card-meta">
+              <span class="tag">Hiking</span>
+              <span class="tag">Rock Art</span>
+              <span class="tag">UNESCO</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 6 — Boulders Beach -->
+        <div class="card">
+          <div class="card-img-wrap">
+            <img class="card-img"
+                 src="https://images.unsplash.com/photo-1504173010664-32509107932f?w=640&q=80"
+                 alt="Boulders Beach Penguins" loading="lazy"/>
+            <span class="card-badge">Unique</span>
+            <span class="card-province">Western Cape</span>
+          </div>
+          <div class="card-body">
+            <h2>Boulders Beach</h2>
+            <p class="card-desc">Home to a thriving colony of African penguins waddling between smooth granite boulders on a sheltered bay near Simon's Town.</p>
+            <div class="card-meta">
+              <span class="tag">Penguins</span>
+              <span class="tag">Swimming</span>
+              <span class="tag">Family</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 7 — Johannesburg -->
+        <div class="card">
+          <div class="card-img-wrap">
+            <img class="card-img"
+                 src="https://images.unsplash.com/photo-1577948000111-9c970dfe3743?w=640&q=80"
+                 alt="Johannesburg" loading="lazy"/>
+            <span class="card-badge">Urban</span>
+            <span class="card-province">Gauteng</span>
+          </div>
+          <div class="card-body">
+            <h2>Johannesburg</h2>
+            <p class="card-desc">The City of Gold — pulsing with energy, street art, and history. Soweto's legacy, the Apartheid Museum, and Maboneng's creative buzz await.</p>
+            <div class="card-meta">
+              <span class="tag">History</span>
+              <span class="tag">Soweto</span>
+              <span class="tag">Nightlife</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 8 — iSimangaliso -->
+        <div class="card">
+          <div class="card-img-wrap">
+            <img class="card-img"
+                 src="https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=640&q=80"
+                 alt="iSimangaliso Wetland Park" loading="lazy"/>
+            <span class="card-badge">UNESCO</span>
+            <span class="card-province">KwaZulu-Natal</span>
+          </div>
+          <div class="card-body">
+            <h2>iSimangaliso</h2>
+            <p class="card-desc">Africa's largest estuarine system — where hippos share the water with whale sharks, leatherback turtles nest on the beach, and flamingos flock at dusk.</p>
+            <div class="card-meta">
+              <span class="tag">Wetlands</span>
+              <span class="tag">Turtles</span>
+              <span class="tag">Whale Sharks</span>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /track -->
+    </div><!-- /track-wrap -->
+
+    <div class="controls">
+      <button class="btn-nav" id="btnPrev" aria-label="Previous">&#8592;</button>
+      <div class="dots" id="dots"></div>
+      <button class="btn-nav" id="btnNext" aria-label="Next">&#8594;</button>
+    </div>
+  </section>
+
+  <footer>
+    &copy; 2026 Discover South Africa &mdash; <a href="#">Start planning</a>
+  </footer>
+
+  <script>
+    const track   = document.getElementById('track');
+    const wrap    = document.getElementById('trackWrap');
+    const dotsEl  = document.getElementById('dots');
+    const btnPrev = document.getElementById('btnPrev');
+    const btnNext = document.getElementById('btnNext');
+    const cards   = Array.from(track.querySelectorAll('.card'));
+    const total   = cards.length;
+    let current   = 0;
+
+    cards.forEach((_, i) => {
+      const d = document.createElement('button');
+      d.className = 'dot' + (i === 0 ? ' active' : '');
+      d.setAttribute('aria-label', `Go to slide ${i+1}`);
+      d.addEventListener('click', () => goTo(i));
+      dotsEl.appendChild(d);
+    });
+
+    function getDots() { return Array.from(dotsEl.querySelectorAll('.dot')); }
+
+    function getOffset(index) {
+      const wrapW  = wrap.offsetWidth;
+      const cardEl = cards[index];
+      return Math.max(0, cardEl.offsetLeft - (wrapW - cardEl.offsetWidth) / 2);
+    }
+
+    function goTo(index) {
+      current = (index + total) % total;
+      track.style.transform = `translateX(-${getOffset(current)}px)`;
+      getDots().forEach((d, i) => d.classList.toggle('active', i === current));
+    }
+
+    btnPrev.addEventListener('click', () => goTo(current - 1));
+    btnNext.addEventListener('click', () => goTo(current + 1));
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowLeft')  goTo(current - 1);
+      if (e.key === 'ArrowRight') goTo(current + 1);
+    });
+
+    let startX = 0, dragging = false, moved = false;
+    wrap.addEventListener('mousedown',  e => { startX = e.clientX; dragging = true; moved = false; });
+    wrap.addEventListener('touchstart', e => { startX = e.touches[0].clientX; dragging = true; moved = false; }, {passive:true});
+    wrap.addEventListener('mousemove',  e => { if (dragging && Math.abs(e.clientX - startX) > 5) moved = true; });
+    function endDrag(endX) {
+      if (!dragging) return;
+      dragging = false;
+      if (Math.abs(startX - endX) > 50) goTo(startX - endX > 0 ? current + 1 : current - 1);
+    }
+    wrap.addEventListener('mouseup',  e => endDrag(e.clientX));
+    wrap.addEventListener('touchend', e => endDrag(e.changedTouches[0].clientX));
+    wrap.addEventListener('click', e => { if (moved) e.stopPropagation(); });
+
+    window.addEventListener('resize', () => goTo(current));
+  </script>
+</body>
+</html>

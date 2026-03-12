@@ -1,0 +1,559 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;1,9..144,400&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet"/>
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #0b0d0b;
+    --surface:  #131510;
+    --gold:     #d4a843;
+    --gold-dim: rgba(212,168,67,.18);
+    --cream:    #f0e8d5;
+    --muted:    rgba(240,232,213,.45);
+    --border:   rgba(212,168,67,.15);
+  }
+
+  .hub-page {
+    background: var(--bg);
+    min-height: 100vh;
+    color: var(--cream);
+    overflow-x: hidden;
+  }
+
+  /* ── HERO ── */
+  .hub-hero {
+    position: relative;
+    text-align: center;
+    padding: 5rem 1.5rem 3rem;
+    overflow: hidden;
+  }
+  /* subtle map-dot grid background */
+  .hub-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(circle, rgba(212,168,67,.12) 1px, transparent 1px);
+    background-size: 32px 32px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+    pointer-events: none;
+  }
+  .hub-hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 65% 55% at 50% 0%, rgba(212,168,67,.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hub-eyebrow {
+    font-family: 'Outfit', sans-serif;
+    font-size: .68rem;
+    font-weight: 500;
+    letter-spacing: .45em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 1;
+  }
+  .hub-h1 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(2.6rem, 6vw, 5rem);
+    font-weight: 700;
+    line-height: 1.0;
+    color: var(--cream);
+    position: relative;
+    z-index: 1;
+    letter-spacing: -.02em;
+  }
+  .hub-h1 em {
+    font-style: italic;
+    font-weight: 300;
+    color: var(--gold);
+  }
+  .hub-sub {
+    margin-top: 1.1rem;
+    font-family: 'Outfit', sans-serif;
+    font-size: .95rem;
+    font-weight: 300;
+    color: var(--muted);
+    letter-spacing: .04em;
+    position: relative;
+    z-index: 1;
+  }
+  .hub-rule {
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, transparent, var(--gold), transparent);
+    margin: 2rem auto 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── CAROUSEL SECTION ── */
+  .hub-carousel-section {
+    padding: 2rem 0 5rem;
+  }
+
+  .hub-track-wrap {
+    overflow: hidden;
+    width: 100%;
+    cursor: grab;
+  }
+  .hub-track-wrap:active { cursor: grabbing; }
+
+  .hub-track {
+    display: flex;
+    gap: 2rem;
+    padding: 1.5rem 2.5rem;
+    transition: transform .6s cubic-bezier(.22,.68,0,1.15);
+    will-change: transform;
+  }
+
+  /* ── COUNTRY CARD ── */
+  .hub-card {
+    flex: 0 0 360px;
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    box-shadow: 0 20px 60px rgba(0,0,0,.5);
+    transition: transform .4s ease, box-shadow .4s ease, border-color .4s ease;
+    -webkit-user-select: none; user-select: none;
+    text-decoration: none;
+    display: block;
+    color: inherit;
+  }
+  .hub-card:hover {
+    transform: translateY(-10px) scale(1.018);
+    box-shadow: 0 36px 90px rgba(0,0,0,.7);
+    border-color: rgba(212,168,67,.45);
+  }
+
+  /* full-bleed image */
+  .hub-card-img-wrap {
+    position: relative;
+    height: 320px;
+    overflow: hidden;
+  }
+  .hub-card-img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: brightness(.65) saturate(1.2);
+    transition: filter .5s ease, transform .7s ease;
+  }
+  .hub-card:hover .hub-card-img {
+    filter: brightness(.82) saturate(1.3);
+    transform: scale(1.07);
+  }
+
+  /* gradient overlay on image */
+  .hub-card-img-wrap::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      rgba(11,13,11,.92) 0%,
+      rgba(11,13,11,.4) 45%,
+      transparent 100%
+    );
+    pointer-events: none;
+  }
+
+  /* country flag + name overlaid on image */
+  .hub-card-overlay {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 1.6rem 1.8rem 1.4rem;
+    z-index: 2;
+  }
+  .hub-flag {
+    font-size: 2.4rem;
+    line-height: 1;
+    display: block;
+    margin-bottom: .5rem;
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,.5));
+  }
+  .hub-country-name {
+    font-family: 'Fraunces', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--cream);
+    line-height: 1;
+    letter-spacing: -.02em;
+    text-shadow: 0 2px 12px rgba(0,0,0,.6);
+  }
+  .hub-country-sub {
+    font-family: 'Outfit', sans-serif;
+    font-size: .72rem;
+    font-weight: 400;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-top: .3rem;
+    display: block;
+  }
+
+  /* card body */
+  .hub-card-body {
+    padding: 1.4rem 1.8rem 1.7rem;
+    border-top: 1px solid var(--border);
+  }
+  .hub-card-desc {
+    font-family: 'Outfit', sans-serif;
+    font-size: .88rem;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--muted);
+    margin-bottom: 1.3rem;
+  }
+  .hub-highlights {
+    display: flex;
+    gap: .5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+  }
+  .hub-highlight {
+    font-family: 'Outfit', sans-serif;
+    font-size: .68rem;
+    font-weight: 400;
+    letter-spacing: .06em;
+    padding: .22rem .7rem;
+    border-radius: 50px;
+    border: 1px solid var(--border);
+    color: rgba(240,232,213,.5);
+    transition: border-color .25s, color .25s, background .25s;
+  }
+  .hub-card:hover .hub-highlight {
+    border-color: rgba(212,168,67,.4);
+    color: var(--cream);
+    background: var(--gold-dim);
+  }
+
+  /* CTA link row */
+  .hub-cta {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    font-family: 'Outfit', sans-serif;
+    font-size: .82rem;
+    font-weight: 500;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--gold);
+    transition: gap .25s;
+  }
+  .hub-card:hover .hub-cta { gap: .9rem; }
+  .hub-cta-arrow {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(212,168,67,.4);
+    display: flex; align-items: center; justify-content: center;
+    font-size: .9rem;
+    transition: background .25s, border-color .25s;
+  }
+  .hub-card:hover .hub-cta-arrow {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--bg);
+  }
+
+  /* ── CONTROLS ── */
+  .hub-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.2rem;
+    margin-top: 2rem;
+  }
+  .hub-btn-nav {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(212,168,67,.3);
+    background: rgba(212,168,67,.06);
+    color: var(--gold);
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .2s, border-color .2s, transform .2s;
+  }
+  .hub-btn-nav:hover {
+    background: rgba(212,168,67,.18);
+    border-color: var(--gold);
+    transform: scale(1.1);
+  }
+  .hub-dots { display: flex; gap: .55rem; align-items: center; }
+  .hub-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: rgba(212,168,67,.22);
+    cursor: pointer;
+    border: none;
+    transition: background .25s, transform .25s;
+  }
+  .hub-dot.active {
+    background: var(--gold);
+    transform: scale(1.5);
+  }
+
+  /* ── STATS STRIP ── */
+  .hub-stats {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    margin: 0 2rem 4rem;
+    flex-wrap: wrap;
+  }
+  .hub-stat {
+    flex: 1;
+    min-width: 140px;
+    text-align: center;
+    padding: 1.8rem 1rem;
+    border-right: 1px solid var(--border);
+  }
+  .hub-stat:last-child { border-right: none; }
+  .hub-stat-num {
+    font-family: 'Fraunces', serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--gold);
+    line-height: 1;
+    display: block;
+  }
+  .hub-stat-label {
+    font-family: 'Outfit', sans-serif;
+    font-size: .7rem;
+    font-weight: 400;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: .35rem;
+    display: block;
+  }
+
+  /* ── FOOTER ── */
+  .hub-footer {
+    text-align: center;
+    padding: 1.5rem 1rem 3rem;
+    font-family: 'Outfit', sans-serif;
+    font-size: .72rem;
+    letter-spacing: .1em;
+    color: rgba(240,232,213,.18);
+  }
+  .hub-footer a { color: var(--gold); text-decoration: none; }
+
+  @media (max-width: 640px) {
+    .hub-card  { flex: 0 0 88vw; }
+    .hub-track { padding: 1rem; gap: 1.2rem; }
+    .hub-stats { margin: 0 0 3rem; }
+    .hub-stat  { min-width: 110px; }
+  }
+</style>
+
+<div class="hub-page">
+
+  <!-- HERO -->
+  <header class="hub-hero">
+    <p class="hub-eyebrow">African Destinations</p>
+    <h1 class="hub-h1">Choose Your <em>Adventure</em></h1>
+    <p class="hub-sub">Three extraordinary countries. Infinite memories.</p>
+    <div class="hub-rule"></div>
+  </header>
+
+  <!-- COUNTRY CAROUSEL -->
+  <section class="hub-carousel-section">
+    <div class="hub-track-wrap" id="hubTrackWrap">
+      <div class="hub-track" id="hubTrack">
+
+        <!-- ── KENYA ── -->
+        <a href="{% url 'kenya_destinations' %}"
+           class="hub-card {% if request.resolver_match.url_name == 'kenya_destinations' %}active{% endif %}">
+          <div class="hub-card-img-wrap">
+            <img class="hub-card-img"
+                 src="https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=800&q=80"
+                 alt="Kenya — Maasai Mara" loading="lazy"/>
+            <div class="hub-card-overlay">
+              <span class="hub-flag">🇰🇪</span>
+              <span class="hub-country-name">Kenya</span>
+              <span class="hub-country-sub">East Africa</span>
+            </div>
+          </div>
+          <div class="hub-card-body">
+            <p class="hub-card-desc">Where the Great Migration thunders across the Maasai Mara, elephants roam beneath Kilimanjaro, and the Indian Ocean meets ancient Swahili culture.</p>
+            <div class="hub-highlights">
+              <span class="hub-highlight">Maasai Mara</span>
+              <span class="hub-highlight">Amboseli</span>
+              <span class="hub-highlight">Diani Beach</span>
+              <span class="hub-highlight">Lamu</span>
+              <span class="hub-highlight">Mt. Kenya</span>
+            </div>
+            <div class="hub-cta">
+              Explore Kenya
+              <span class="hub-cta-arrow">&#8594;</span>
+            </div>
+          </div>
+        </a>
+
+        <!-- ── SOUTH AFRICA ── -->
+        <a href="{% url 'destinations_south_africa' %}"
+           class="hub-card {% if request.resolver_match.url_name == 'destinations_south_africa' %}active{% endif %}">
+          <div class="hub-card-img-wrap">
+            <img class="hub-card-img"
+                 src="https://images.unsplash.com/photo-1580060839134-75a5edca2e99?w=800&q=80"
+                 alt="South Africa — Cape Town" loading="lazy"/>
+            <div class="hub-card-overlay">
+              <span class="hub-flag">🇿🇦</span>
+              <span class="hub-country-name">South Africa</span>
+              <span class="hub-country-sub">Southern Africa</span>
+            </div>
+          </div>
+          <div class="hub-card-body">
+            <p class="hub-card-desc">Table Mountain rising above the Atlantic, Kruger's Big Five, Cape Winelands' rolling vineyards, and the dramatic Garden Route coastline.</p>
+            <div class="hub-highlights">
+              <span class="hub-highlight">Cape Town</span>
+              <span class="hub-highlight">Kruger</span>
+              <span class="hub-highlight">Winelands</span>
+              <span class="hub-highlight">Drakensberg</span>
+              <span class="hub-highlight">Garden Route</span>
+            </div>
+            <div class="hub-cta">
+              Explore South Africa
+              <span class="hub-cta-arrow">&#8594;</span>
+            </div>
+          </div>
+        </a>
+
+        <!-- ── TANZANIA ── -->
+        <a href="{% url 'destinations_tanzania' %}"
+           class="hub-card {% if request.resolver_match.url_name == 'destinations_tanzania' %}active{% endif %}">
+          <div class="hub-card-img-wrap">
+            <img class="hub-card-img"
+                 src="https://images.unsplash.com/photo-1621414050946-1b6f2540ef6b?w=800&q=80"
+                 alt="Tanzania — Kilimanjaro" loading="lazy"/>
+            <div class="hub-card-overlay">
+              <span class="hub-flag">🇹🇿</span>
+              <span class="hub-country-name">Tanzania</span>
+              <span class="hub-country-sub">East Africa</span>
+            </div>
+          </div>
+          <div class="hub-card-body">
+            <p class="hub-card-desc">The Serengeti's endless plains, Zanzibar's turquoise shores, Kilimanjaro's glacial summit, and the untouched wilderness of Nyerere.</p>
+            <div class="hub-highlights">
+              <span class="hub-highlight">Serengeti</span>
+              <span class="hub-highlight">Zanzibar</span>
+              <span class="hub-highlight">Kilimanjaro</span>
+              <span class="hub-highlight">Ngorongoro</span>
+              <span class="hub-highlight">Pemba Island</span>
+            </div>
+            <div class="hub-cta">
+              Explore Tanzania
+              <span class="hub-cta-arrow">&#8594;</span>
+            </div>
+          </div>
+        </a>
+
+      </div><!-- /hub-track -->
+    </div><!-- /hub-track-wrap -->
+
+    <!-- Controls -->
+    <div class="hub-controls">
+      <button class="hub-btn-nav" id="hubBtnPrev" aria-label="Previous">&#8592;</button>
+      <div class="hub-dots" id="hubDots"></div>
+      <button class="hub-btn-nav" id="hubBtnNext" aria-label="Next">&#8594;</button>
+    </div>
+  </section>
+
+  <!-- STATS STRIP -->
+  <div class="hub-stats">
+    <div class="hub-stat">
+      <span class="hub-stat-num">3</span>
+      <span class="hub-stat-label">Countries</span>
+    </div>
+    <div class="hub-stat">
+      <span class="hub-stat-num">22</span>
+      <span class="hub-stat-label">Destinations</span>
+    </div>
+    <div class="hub-stat">
+      <span class="hub-stat-num">∞</span>
+      <span class="hub-stat-label">Memories</span>
+    </div>
+  </div>
+
+  <footer class="hub-footer">
+    &copy; 2026 Savanna Booking &mdash; <a href="#">Start your journey</a>
+  </footer>
+
+</div><!-- /hub-page -->
+
+<script>
+  (function () {
+    const track   = document.getElementById('hubTrack');
+    const wrap    = document.getElementById('hubTrackWrap');
+    const dotsEl  = document.getElementById('hubDots');
+    const btnPrev = document.getElementById('hubBtnPrev');
+    const btnNext = document.getElementById('hubBtnNext');
+    const cards   = Array.from(track.querySelectorAll('.hub-card'));
+    const total   = cards.length;
+    let current   = 0;
+
+    /* build dots */
+    cards.forEach((_, i) => {
+      const d = document.createElement('button');
+      d.className = 'hub-dot' + (i === 0 ? ' active' : '');
+      d.setAttribute('aria-label', `Go to slide ${i + 1}`);
+      d.addEventListener('click', () => goTo(i));
+      dotsEl.appendChild(d);
+    });
+
+    function getDots() { return Array.from(dotsEl.querySelectorAll('.hub-dot')); }
+
+    function getOffset(index) {
+      const wrapW = wrap.offsetWidth;
+      const card  = cards[index];
+      return Math.max(0, card.offsetLeft - (wrapW - card.offsetWidth) / 2);
+    }
+
+    function goTo(index) {
+      current = (index + total) % total;
+      track.style.transform = `translateX(-${getOffset(current)}px)`;
+      getDots().forEach((d, i) => d.classList.toggle('active', i === current));
+    }
+
+    btnPrev.addEventListener('click', () => goTo(current - 1));
+    btnNext.addEventListener('click', () => goTo(current + 1));
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowLeft')  goTo(current - 1);
+      if (e.key === 'ArrowRight') goTo(current + 1);
+    });
+
+    /* drag / swipe */
+    let startX = 0, dragging = false, moved = false;
+    wrap.addEventListener('mousedown',  e => { startX = e.clientX; dragging = true; moved = false; });
+    wrap.addEventListener('touchstart', e => { startX = e.touches[0].clientX; dragging = true; moved = false; }, { passive: true });
+    wrap.addEventListener('mousemove',  e => { if (dragging && Math.abs(e.clientX - startX) > 5) moved = true; });
+
+    function endDrag(endX) {
+      if (!dragging) return;
+      dragging = false;
+      if (Math.abs(startX - endX) > 50) goTo(startX - endX > 0 ? current + 1 : current - 1);
+    }
+    wrap.addEventListener('mouseup',  e => endDrag(e.clientX));
+    wrap.addEventListener('touchend', e => endDrag(e.changedTouches[0].clientX));
+
+    /* prevent link navigation on drag */
+    wrap.addEventListener('click', e => { if (moved) { e.preventDefault(); e.stopPropagation(); } });
+
+    window.addEventListener('resize', () => goTo(current));
+  })();
+</script>
+
+{% endblock %}
