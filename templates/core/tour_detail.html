@@ -4,87 +4,83 @@
 
 {% block content %}
 
-<!-- HERO -->
-<div style="height:60vh;background:url('{{ tour.get_image }}') center/cover;position:relative;display:flex;align-items:flex-end;">
-  <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(26,18,8,0.85) 0%,transparent 60%);"></div>
-  <div style="position:relative;z-index:2;padding:48px;max-width:800px;">
+<div style="height:65vh; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent), url('{{ tour.image_url }}') center/cover; position:relative; display:flex; align-items:flex-end;">
+  <div style="padding:60px; max-width:1000px; width:100%;">
     {% if tour.badge %}
-      <div style="background:var(--earth);color:white;font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase;padding:5px 12px;border-radius:2px;display:inline-block;margin-bottom:12px;">
+      <div style="background:#c19a6b; color:white; font-size:0.75rem; letter-spacing:0.15em; text-transform:uppercase; padding:6px 15px; border-radius:2px; display:inline-block; margin-bottom:15px; font-weight:bold;">
         {{ tour.badge }}
       </div>
     {% endif %}
-    <h1 style="font-family:'Playfair Display',serif;font-size:clamp(2rem,5vw,3.5rem);color:white;margin-bottom:12px;">
+    <h1 style="font-family:'Playfair Display', serif; font-size:clamp(2.5rem, 6vw, 4rem); color:white; margin-bottom:15px; line-height:1.1;">
       {{ tour.title }}
     </h1>
-    <div style="display:flex;gap:24px;color:#c4b49a;font-size:0.9rem;">
-      <span>📍 {{ tour.location }}</span>
-      <span>⏱ {{ tour.duration }}</span>
-      <span>⭐ {{ tour.rating }}</span>
+    <div style="display:flex; gap:30px; color:#e0e0e0; font-size:1rem; font-weight: 300;">
+      <span><i class="fas fa-map-marker-alt" style="color:#c19a6b;"></i> {{ tour.location }}</span>
+      <span><i class="fas fa-clock" style="color:#c19a6b;"></i> {{ tour.duration }}</span>
+      <span><i class="fas fa-star" style="color:#c19a6b;"></i> {{ tour.rating }}</span>
     </div>
   </div>
 </div>
 
-<!-- CONTENT -->
-<div class="page-wrap" style="max-width:900px;">
-  <div style="display:grid;grid-template-columns:1fr 320px;gap:48px;align-items:start;">
+<div style="max-width:1100px; margin: 60px auto; padding: 0 20px;">
+  <div style="display:grid; grid-template-columns: 1fr 350px; gap:60px; align-items:start;">
 
-    <!-- LEFT -->
     <div>
-      <div class="section-eyebrow">About This Experience</div>
-      <p style="font-size:1.05rem;line-height:1.8;color:var(--text);margin-bottom:32px;">
+      <h3 style="text-transform:uppercase; letter-spacing:2px; font-size:0.9rem; color:#8d6e63; margin-bottom:20px;">About This Experience</h3>
+      <p style="font-size:1.15rem; line-height:1.9; color:#333; margin-bottom:40px; font-weight:300;">
         {{ tour.description }}
       </p>
-      <div style="display:flex;gap:16px;flex-wrap:wrap;">
-        <div style="background:white;padding:20px 28px;border-radius:4px;box-shadow:0 2px 12px rgba(0,0,0,0.06);text-align:center;">
-          <div style="font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--earth);">{{ tour.duration }}</div>
-          <div style="font-size:0.75rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;">Duration</div>
+
+      <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:20px;">
+        <div style="background:#f9f7f4; padding:25px; border-radius:4px; text-align:center; border:1px solid #eee;">
+          <div style="font-family:'Playfair Display',serif; font-size:1.6rem; color:#1a1208;">{{ tour.duration }}</div>
+          <div style="font-size:0.7rem; color:#888; letter-spacing:0.1em; text-transform:uppercase; margin-top:5px;">Duration</div>
         </div>
-        <div style="background:white;padding:20px 28px;border-radius:4px;box-shadow:0 2px 12px rgba(0,0,0,0.06);text-align:center;">
-          <div style="font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--earth);">{{ tour.rating }}⭐</div>
-          <div style="font-size:0.75rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;">Rating</div>
+        <div style="background:#f9f7f4; padding:25px; border-radius:4px; text-align:center; border:1px solid #eee;">
+          <div style="font-family:'Playfair Display',serif; font-size:1.6rem; color:#1a1208;">{{ tour.rating }} ⭐</div>
+          <div style="font-size:0.7rem; color:#888; letter-spacing:0.1em; text-transform:uppercase; margin-top:5px;">Rating</div>
         </div>
-        <div style="background:white;padding:20px 28px;border-radius:4px;box-shadow:0 2px 12px rgba(0,0,0,0.06);text-align:center;">
-          <div style="font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--earth);">{{ tour.get_category_display }}</div>
-          <div style="font-size:0.75rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;">Category</div>
+        <div style="background:#f9f7f4; padding:25px; border-radius:4px; text-align:center; border:1px solid #eee;">
+          <div style="font-family:'Playfair Display',serif; font-size:1.6rem; color:#1a1208;">{{ tour.get_category_display }}</div>
+          <div style="font-size:0.7rem; color:#888; letter-spacing:0.1em; text-transform:uppercase; margin-top:5px;">Category</div>
         </div>
       </div>
     </div>
 
-    <!-- RIGHT: BOOKING CARD -->
-    <div style="background:white;border-radius:4px;box-shadow:0 4px 24px rgba(0,0,0,0.08);padding:32px;position:sticky;top:100px;">
-      <div style="font-family:'Playfair Display',serif;font-size:2rem;color:var(--earth);margin-bottom:4px;">
-        ${{ tour.price_usd }}
+    <div style="background:white; border-radius:8px; border:1px solid #e0e0e0; box-shadow:0 10px 30px rgba(0,0,0,0.05); padding:40px; position:sticky; top:100px;">
+      <div style="margin-bottom:25px;">
+        <span style="color:#888; font-size:0.8rem; text-transform:uppercase;">From</span>
+        <div style="font-family:'Playfair Display',serif; font-size:2.8rem; color:#1a1208; line-height:1;">
+          ${{ tour.price_usd }}
+        </div>
+        <div style="color:#00a651; font-weight:bold; font-size:0.95rem; margin-top:10px;">
+          ≈ KES {{ tour.price_kes }}
+        </div>
       </div>
-      <div style="color:var(--muted);font-size:0.85rem;margin-bottom:4px;">per person</div>
-      <div style="color:#00a651;font-size:0.85rem;margin-bottom:24px;">≈ KES {{ tour.price_kes }}</div>
 
-      <div style="border-top:1px solid #f0e8dc;padding-top:20px;margin-bottom:20px;">
-        <div style="display:flex;justify-content:space-between;font-size:0.9rem;margin-bottom:8px;">
-          <span style="color:var(--muted);">Location</span>
-          <span>{{ tour.location }}</span>
+      <div style="border-top:1px solid #eee; padding-top:25px; margin-bottom:30px;">
+        <div style="display:flex; justify-content:space-between; font-size:0.95rem; margin-bottom:12px;">
+          <span style="color:#777;">Region</span>
+          <span style="font-weight:500;">{{ tour.get_country_display }}</span>
         </div>
-        <div style="display:flex;justify-content:space-between;font-size:0.9rem;margin-bottom:8px;">
-          <span style="color:var(--muted);">Country</span>
-          <span>{{ tour.get_country_display }}</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;font-size:0.9rem;">
-          <span style="color:var(--muted);">Duration</span>
-          <span>{{ tour.duration }}</span>
+        <div style="display:flex; justify-content:space-between; font-size:0.95rem; margin-bottom:12px;">
+          <span style="color:#777;">Availability</span>
+          <span style="font-weight:500; color:#c19a6b;">Limited Spots</span>
         </div>
       </div>
 
       {% if user.is_authenticated %}
-        <a href="{% url 'create_booking' tour.pk %}" class="btn-primary" style="width:100%;text-align:center;display:block;">
-          Book Now
+        <a href="{% url 'create_booking' tour.pk %}" class="btn-primary" style="width:100%; text-align:center; display:block; padding:18px; text-decoration:none; background:#1a1208; color:white; font-weight:bold; border-radius:4px; transition: 0.3s;">
+          Reserve Now
         </a>
       {% else %}
-        <a href="{% url 'login' %}?next={% url 'create_booking' tour.pk %}" class="btn-primary" style="width:100%;text-align:center;display:block;">
+        <a href="{% url 'login' %}?next={% url 'create_booking' tour.pk %}" style="width:100%; text-align:center; display:block; padding:18px; text-decoration:none; background:#eee; color:#333; font-weight:bold; border-radius:4px;">
           Sign In to Book
         </a>
       {% endif %}
 
-      <a href="{% url 'tour_list' %}" style="display:block;text-align:center;margin-top:16px;color:var(--muted);font-size:0.85rem;text-decoration:none;">
-        ← Back to all tours
+      <a href="{% url 'tour_list' %}" style="display:block; text-align:center; margin-top:20px; color:#999; font-size:0.85rem; text-decoration:none;">
+        ← Back to all destinations
       </a>
     </div>
 
