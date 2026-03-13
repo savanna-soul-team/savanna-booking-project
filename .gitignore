@@ -13,7 +13,6 @@ ENV/
 *.sqlite3
 /staticfiles/
 /media/
-.env
 .vscode/
 .idea/
 Thumbs.db

@@ -103,13 +103,25 @@ if not DEBUG:
     X_FRAME_OPTIONS                = 'DENY'
 
 # ── M-Pesa (django-daraja) ────────────────────────────────────
+# ── M-Pesa (django-daraja) ────────────────────────────────────
 MPESA_ENVIRONMENT     = config('MPESA_ENV', default='sandbox')
-MPESA_CONSUMER_KEY    = config('MPESA_CONSUMER_KEY')
-MPESA_CONSUMER_SECRET = config('MPESA_CONSUMER_SECRET')
-MPESA_SHORTCODE       = config('MPESA_SHORTCODE')
-MPESA_PASSKEY         = config('MPESA_PASSKEY')
-# settings.py around line 111
-MPESA_CALLBACK_URL = config('MPESA_CALLBACK_URL', default='https://example.com/callback')
+# ── M-Pesa (django-daraja) ────────────────────────────────────
+MPESA_ENVIRONMENT       = config('MPESA_ENV', default='sandbox')
+MPESA_CONSUMER_KEY      = config('MPESA_CONSUMER_KEY')
+MPESA_CONSUMER_SECRET   = config('MPESA_CONSUMER_SECRET')
+MPESA_SHORTCODE         = config('MPESA_SHORTCODE')
+MPESA_EXPRESS_SHORTCODE = config('MPESA_EXPRESS_SHORTCODE')
+MPESA_PASSKEY           = config('MPESA_PASSKEY')
+
+# UNIVERSAL CALLBACK LOGIC
+if DEBUG:
+    # Locally: Use the Ngrok URL defined in your .env
+    MPESA_CALLBACK_URL = config('MPESA_CALLBACK_URL')
+else:
+    # Production: Automatically build the URL using your live domain
+    # Ensure you add DOMAIN_NAME (e.g., https://savanna-booking.com) to your production env
+    DOMAIN_NAME = config('DOMAIN_NAME') 
+    MPESA_CALLBACK_URL = f"{DOMAIN_NAME.rstrip('/')}/mpesa/callback/"
 
 # ── Email (optional — for booking confirmations) ──────────────
 EMAIL_BACKEND = config('EMAIL_BACKEND',

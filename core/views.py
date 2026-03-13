@@ -150,30 +150,50 @@ def cancel_booking(request, pk):
 @login_required
 def payment_view(request, pk):
     booking = get_object_or_404(Booking, pk=pk, user=request.user)
+    
     if booking.status == 'confirmed':
         return redirect('booking_success', pk=booking.pk)
 
     if request.method == 'POST':
         form = PaymentForm(request.POST)
         if form.is_valid():
-            phone  = form.cleaned_data['phone_number']
-            cl     = MpesaClient()
-            resp   = cl.stk_push(
+            # 1. CLEAN THE PHONE NUMBER (The "Safaricom Standard")
+            raw_phone = form.cleaned_data['phone_number']
+            phone = str(raw_phone).strip().replace("+", "")
+            if phone.startswith('0'):
+                phone = '254' + phone[1:]
+            elif not phone.startswith('254'):
+                phone = '254' + phone
+
+            # 2. PREPARE THE CLIENT
+            cl = MpesaClient()
+            
+            # Ensure amount is a whole number (Safaricom dislikes decimals)
+            amount = int(booking.total_kes)
+            
+            # 3. TRIGGER THE PUSH
+            print(f"--- DEBUG: Attempting STK Push to {phone} for {amount} KES ---")
+            
+            resp = cl.stk_push(
                 phone,
-                booking.total_kes,
+                amount,
                 f"SB-{booking.pk}",
                 f"{booking.tour.title[:20]}",
                 settings.MPESA_CALLBACK_URL,
             )
+            
+            # Log the response object to the terminal for debugging
+            print(f"--- DEBUG M-PESA RESPONSE: {vars(resp)} ---")
+
             if resp.response_code == '0':
                 MpesaTransaction.objects.update_or_create(
                     booking=booking,
                     defaults={
                         'checkout_request_id': resp.checkout_request_id,
                         'merchant_request_id': resp.merchant_request_id,
-                        'phone_number':        phone,
-                        'amount':              booking.total_kes,
-                        'status':              'pending',
+                        'phone_number': phone,
+                        'amount': amount,
+                        'status': 'pending',
                     }
                 )
                 return JsonResponse({
@@ -186,13 +206,14 @@ def payment_view(request, pk):
                     'message': resp.response_description or 'STK push failed.',
                 })
     else:
+        # Pre-fill with the user's stored phone number if it exists
         form = PaymentForm(initial={
             'phone_number': request.user.phone_number
         })
 
     return render(request, 'core/payment.html', {
         'booking': booking,
-        'form':    form,
+        'form': form,
     })
 
 @login_required
